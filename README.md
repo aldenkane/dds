@@ -4,7 +4,7 @@ CSE 40535 Term Project by Alden Kane. Uses color and motion detection features f
 
 ## Authors
 
-All source code by Alden Kane. See "Resources and References," as well as code comments, for pertinent citations.
+Source code by Alden Kane. See "Resources and References," as well as code comments, for pertinent citations.
 
 [https://www.aldenkane.com](https://www.aldenkane.com)
 
@@ -12,13 +12,15 @@ All source code by Alden Kane. See "Resources and References," as well as code c
 
 I used a GoPro Hero7 Black (1920 x 1080 at 30 or 60 FPS) for data collection. I collected approximately 1.5 hours of underwater video at Rolf's Acquatic Center and Rockne Memorial Pool at the University of Notre Dame.
 
-## Directions on Running Program
+## Directions for Running Program
 
 **Library Requirements, using Python 3.7.5 Release:**
+
 numpy==1.17.4
 opencv-contrib-python==4.1.2.30
 
 **Steps for Running Program:**
+
 ..1. Clone Repository
 ..2. Ensure all libraries are installed
 ..3. Set `cam = cv2.VideoCapture('')` location of video to test
@@ -28,6 +30,7 @@ python3 uw_swimmer_detection.py
 ```
 
 **Test Samples**
+
 ..* A test video, at `../dataSet/swim3/swim3.1-12-of-14.mp4` has been provided for running the code
 
 ## System Accuracy

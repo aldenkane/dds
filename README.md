@@ -14,11 +14,11 @@ I used a GoPro Hero7 Black (1920 x 1080 at 30 or 60 FPS) for data collection. I 
 
 ## Directions on Running Program
 
-_Library Requirements, using Python 3.7.5 Release:_
+**Library Requirements, using Python 3.7.5 Release:**
 numpy==1.17.4
 opencv-contrib-python==4.1.2.30
 
-_Steps for Running Program:_
+**Steps for Running Program:**
 ..1. Clone Repository
 ..2. Ensure all libraries are installed
 ..3. Set `cam = cv2.VideoCapture('')` location of video to test
@@ -27,13 +27,12 @@ _Steps for Running Program:_
 python3 uw_swimmer_detection.py
 ```
 
-_Test Samples_
-
+**Test Samples**
 ..* A test video, at `../dataSet/swim3/swim3.1-12-of-14.mp4` has been provided for running the code
 
 ## System Accuracy
 
-Testing by Alden Kane showed an Intersection over Union (IoU) of approximately 0.81 ± 0.12 on the train and validation sets. The test set, sourced from Rockne Memorial Pool, show lower classificaiton accuracy due to poor overhead illumination in the pool.
+Testing by Alden Kane showed an Intersection over Union (IoU) of approximately 0.81 ± 0.12 on the train and validation sets. The test set, sourced from Rockne Memorial Pool, showed lower classificaiton accuracy due to poor overhead illumination in the pool.
 
 ## Future Improvements
 

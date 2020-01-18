@@ -45,7 +45,7 @@ Testing by Alden Kane showed an Intersection over Union (IoU) of approximately 0
 
 ## Future Improvements
 
-System improvements can be generated using:
+System improvements can be generated using:  
 ..* A convolutional neural network (CNN) for swimmer classification. This entails annotating a data set large enough for feature, and then integrating it with color and motion detection in a majority-voting system.  
 ..* A more diverse data set of swimmers with different skin pigment, age, and swimming style.  
 ..* Improved sensor selection. Selecting embedded cameras with lower resolution and frame rates can enhance run time, save on computational cost, and allow for scaleable architectures for implementation in commercial pools.  

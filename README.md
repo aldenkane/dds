@@ -24,10 +24,10 @@ opencv-contrib-python==4.1.2.30
 
 **Steps for Running Program:**
 
-..1. Clone Repository
-..2. Ensure all libraries are installed
-..3. Set `cam = cv2.VideoCapture('')` location of video to test
-..4. From the top-level directory:
+..1. Clone Repository  
+..2. Ensure all libraries are installed  
+..3. Set `cam = cv2.VideoCapture('')` location of video to test 
+..4. From the top-level directory:  
 ```
 python3 uw_swimmer_detection.py
 ```
@@ -53,6 +53,6 @@ System improvements can be generated using:
 
 ## Resources and Reference
 
-..* Dr. Adam Czajka (Notre Dame Computer Vision Research Lab), for his keen insight and expertise
-..* Dr. Adrian Rosebrock (PyImageSearch) for his useful CV tutorials
+..* Dr. Adam Czajka (Notre Dame Computer Vision Research Lab), for his keen insight and expertise  
+..* Dr. Adrian Rosebrock (PyImageSearch) for his useful CV tutorials  
 

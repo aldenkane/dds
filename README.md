@@ -1,6 +1,6 @@
 # DDS: A Two-Feature Underwater Swimmer Detection System
 
-CSE 40535 Term Project
+CSE 40535 Term Project by Alden Kane. Uses color and motion detection features from underwater video feed for frame-by-frame swimmer localization and detection.
 
 ## Authors
 

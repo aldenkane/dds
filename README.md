@@ -1,4 +1,4 @@
-# DDS: A Two-Feature Underwater Swimmer Detection Systems
+# DDS: A Two-Feature Underwater Swimmer Detection System
 
 CSE 40535 Term Project
 

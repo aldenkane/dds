@@ -54,8 +54,8 @@ cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 
 # cam = cv2.VideoCapture('../dataSet/swim4/swim4.3-5-of-9-30fps.mp4')
 # cam = cv2.VideoCapture('../dataSet/swim4/swim4.4-2-of-4-30fps.mp4')
-#cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-7-of-10-30fps.mp4')
-#cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-4-of-10-30fps.mp4')
+# cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-7-of-10-30fps.mp4')
+# cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-4-of-10-30fps.mp4')
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None
@@ -317,7 +317,7 @@ while (True):
 
 
                 # Get number of swimmers in pool from length of contours
-                # numSwimmers = len(contours)
+                numSwimmers = len(contours)
 
                 # Text on Screen for Primitive Lifeguard UI
                 line1_Text = "Time Underwater: {} second(s)".format(scaled_T)  # Format Text for Screen Putting

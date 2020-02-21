@@ -31,7 +31,7 @@ from decimal import *
 # cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-7-of-14.mp4')
 
 # Two Swimmers, Begin Apart, Come Together, Then Separate, Very Good Response
-cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
+# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 
 # Two Swimmers, Begin Apart, Come Together, Then Separate, Poor Response for Multiple Swimmers, Good Response for Solo
 # cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-5-of-29.mp4')
@@ -56,6 +56,12 @@ cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 # cam = cv2.VideoCapture('../dataSet/swim4/swim4.4-2-of-4-30fps.mp4')
 # cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-7-of-10-30fps.mp4')
 # cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-4-of-10-30fps.mp4')
+
+########################################
+### Test Video Sets
+########################################
+
+cam = cv2.VideoCapture('../testNew/akPools5.MOV')
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None

@@ -1,0 +1,6 @@
+[submodule "darknet"]
+	path = darknet
+	url = https://github.com/aldenkane/darknet.git
+[submodule "imagezmq"]
+	path = imagezmq
+	url = https://github.com/aldenkane/imagezmq.git

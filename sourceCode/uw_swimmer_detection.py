@@ -13,8 +13,8 @@
 import cv2
 import numpy as np
 import math
-from random import random
-from pyzbar import pyzbar
+#from random import random
+#from pyzbar import pyzbar
 import datetime
 from decimal import *
 

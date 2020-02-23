@@ -13,10 +13,15 @@
 import cv2
 import numpy as np
 import math
+import socket
+import imagezmq
+import time
 #from random import random
 #from pyzbar import pyzbar
 import datetime
 from decimal import *
+
+
 
 #######################################################
 # Pre-Processing: Declare Many Video Captures (Uncomment Video to See), Global Variables

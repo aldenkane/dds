@@ -42,7 +42,7 @@ rpi_name = socket.gethostname()  # send RPi hostname with each image
 # cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-7-of-14.mp4')
 
 # Two Swimmers, Begin Apart, Come Together, Then Separate, Very Good Response
-cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
+# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 
 # Two Swimmers, Begin Apart, Come Together, Then Separate, Poor Response for Multiple Swimmers, Good Response for Solo
 # cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-5-of-29.mp4')
@@ -70,7 +70,7 @@ cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 ########################################
 # Webcam Capture
 ########################################
-# cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(0)
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None

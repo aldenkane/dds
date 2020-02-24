@@ -27,7 +27,7 @@ from decimal import *
 # use either of the formats below to specifiy address of display computer
 # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
 # Alden's MacBook
-sender = imagezmq.ImageSender(connect_to='tcp://10.10.65.247:5555')
+sender = imagezmq.ImageSender(connect_to='tcp://10.10.68.106:5555')
 rpi_name = socket.gethostname()  # send RPi hostname with each image
 
 #######################################################

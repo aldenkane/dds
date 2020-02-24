@@ -103,7 +103,7 @@ cv2.moveWindow("DDS: Underwater Video Feed", 0, 0)
 # Global Variables for Accuracy, Underwater Timing Features
 #######################################################
 # Counter for number of desired samples -- Global Used for accuracy calc.
-N = 1
+N = 0
 
 # Global Variables for Timing Feature, Number of Swimmers in Pool
 T = 0.00
@@ -318,17 +318,13 @@ while (True):
     cv2.imshow("DDS: Underwater Video Feed", img)
 
     #######################################################
-    # Section 11: ImageZMQ Sending
+    # Section 11: ImageZMQ Sending --> Only Send Every 10th Frame
     #######################################################
-    sender.send_image(rpi_name, img)
-
-    action = cv2.waitKey(1)
-    if action==27:
-        break
-
-    action = cv2.waitKey(1)
-    if action==27:
-        break
+    if N%10 == 0:
+        sender.send_image(rpi_name, img)
+        action = cv2.waitKey(1)
+        if action==27:
+            break
 
     # #######################################################
     # # Section 11: Accuracy Metrics - Images are ClassifIed After, Logged in Excel
@@ -352,6 +348,8 @@ while (True):
     # if N <= 30:
     #     if R < nSamples:
     #         cv2.imwrite(str(write_location), img)
-    #         N = N + 1
+
+    # Global Counter of Frames Processed
+    N = N + 1
 
 cv2.destroyAllWindows()

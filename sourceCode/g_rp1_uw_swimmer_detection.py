@@ -321,7 +321,7 @@ while (True):
     # Section 11: ImageZMQ Sending --> Only Send Every 10th Frame
     #######################################################
     if N%10 == 0:
-        sender.send_image(rpi_name, img)
+        sender.send_image('Underwater Video Stream', img)
         action = cv2.waitKey(1)
         if action==27:
             break

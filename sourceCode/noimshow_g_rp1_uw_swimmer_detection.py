@@ -11,6 +11,7 @@ import math
 import socket
 import imagezmq
 import time
+import argparse
 #from random import random
 import datetime
 from decimal import *
@@ -22,12 +23,22 @@ from decimal import *
 # Motion-based detection code referenced Adrian Rosebrock's "Basic motion detect and tracking with Python and OpenCV" tutorial at https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 
 #######################################################
+# Section 0.1: Use Argparse for Command Line Arguements
+#######################################################
+parser = argparse.ArguementParser()
+parser.add_arguement('-i', "--ip",    type=str,   default=0,  help="IP/TCP Address of Server/Laptop to Send Images To", required=True)
+args = parser.parse_known_args()
+
+ip_address = args.ip
+im_IP = 'tcp://' + str(ip_address) + ':5555'
+
+#######################################################
 # Global ZMQ Sending
 #######################################################
 # use either of the formats below to specifiy address of display computer
 # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
 # Alden's MacBook
-sender = imagezmq.ImageSender(connect_to='tcp://10.10.75.1:5555')
+sender = imagezmq.ImageSender(connect_to=str(im_IP))
 rpi_name = socket.gethostname()  # send RPi hostname with each image
 
 #######################################################

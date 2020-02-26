@@ -26,7 +26,7 @@ from decimal import *
 # Section 0.1: Use Argparse for Command Line Arguements
 #######################################################
 parser = argparse.ArgumentParser()
-parser.add_arguement('-i', "--ip",    type=str,   default=0,  help="IP/TCP Address of Server/Laptop to Send Images To", required=True)
+parser.add_argument('-i', "--ip",    type=str,   default=0,  help="IP/TCP Address of Server/Laptop to Send Images To", required=True)
 args = parser.parse_known_args()
 
 ip_address = args.ip

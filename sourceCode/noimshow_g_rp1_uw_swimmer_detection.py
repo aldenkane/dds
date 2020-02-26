@@ -29,7 +29,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-i', "--ip",    type=str,   default=0,  help="IP/TCP Address of Server/Laptop to Send Images To", required=True)
 args = parser.parse_known_args()
 
-ip_address = args.ip
+ip_address = args[0].ip
 im_IP = 'tcp://' + str(ip_address) + ':5555'
 
 #######################################################

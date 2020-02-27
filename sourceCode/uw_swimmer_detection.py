@@ -95,7 +95,7 @@ cv2.moveWindow("DDS: Underwater Video Feed", 0, 0)
 # Global Variables for Accuracy, Underwater Timing Features
 #######################################################
 # Counter for number of desired samples -- Global Used for accuracy calc.
-N = 1
+N = 0
 
 # Global Variables for Timing Feature, Number of Swimmers in Pool
 T = 0.00
@@ -309,6 +309,12 @@ while (True):
     #######################################################
     cv2.imshow("DDS: Underwater Video Feed", img)
 
+    #######################################################
+    # Section 11: Write 10th Frame to .jpg
+    #######################################################
+    if N%10 == 0:
+        cv2.imwrite('../last_Image/last_Frame.jpg', img)
+
     action = cv2.waitKey(1)
     if action==27:
         break
@@ -335,6 +341,6 @@ while (True):
     # if N <= 30:
     #     if R < nSamples:
     #         cv2.imwrite(str(write_location), img)
-    #         N = N + 1
+    N = N + 1
 
 cv2.destroyAllWindows()

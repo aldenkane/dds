@@ -39,8 +39,7 @@ im_IP = 'tcp://' + str(ip_address) + ':5555'
 # sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
 # Alden's MacBook
 sender = imagezmq.ImageSender(connect_to=str(im_IP))
-rpi_name = socket.gethostname()  # send RPi hostname with each image
-
+rpi_name = socket.gethostname()  # send RPi hostname with each i
 #######################################################
 # Pre-Processing: Declare Many Video Captures (Uncomment Video to See), Global Variables
 #######################################################

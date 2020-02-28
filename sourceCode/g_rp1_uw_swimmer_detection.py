@@ -8,8 +8,6 @@
 import cv2
 import numpy as np
 import math
-import socket
-import imagezmq
 import time
 #from random import random
 import datetime
@@ -20,15 +18,6 @@ from decimal import *
 #######################################################
 # Color-based detection code adapted from "colorTracking.py" script by Dr. Adam Czajka, Andrey Kuelkahmp for University of Notre Dame's Fall 2019 CSE 40535/60535 course
 # Motion-based detection code referenced Adrian Rosebrock's "Basic motion detect and tracking with Python and OpenCV" tutorial at https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
-
-#######################################################
-# Global ZMQ Sending
-#######################################################
-# use either of the formats below to specifiy address of display computer
-# sender = imagezmq.ImageSender(connect_to='tcp://jeff-macbook:5555')
-# Alden's MacBook
-sender = imagezmq.ImageSender(connect_to='tcp://10.10.76.91:5555')
-rpi_name = socket.gethostname()  # send RPi hostname with each image
 
 #######################################################
 # Pre-Processing: Declare Many Video Captures (Uncomment Video to See), Global Variables
@@ -318,13 +307,14 @@ while (True):
     cv2.imshow("DDS: Underwater Video Feed", img)
 
     #######################################################
-    # Section 11: ImageZMQ Sending --> Only Send Every 10th Frame
+    # Section 11: Write 10th Frame to .jpg
     #######################################################
     if N%10 == 0:
-        sender.send_image('Underwater Video Stream', img)
-        action = cv2.waitKey(1)
-        if action==27:
-            break
+        cv2.imwrite('../last_Image/last_Frame.jpg', img)
+
+    action = cv2.waitKey(1)
+    if action==27:
+        break
 
     # #######################################################
     # # Section 11: Accuracy Metrics - Images are ClassifIed After, Logged in Excel

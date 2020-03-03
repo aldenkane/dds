@@ -13,6 +13,8 @@ import time
 import datetime
 from decimal import *
 
+# Write to Log
+print('When we fall asleep, where do we go')
 # Allow for System Startup, Camera Warmup
 time.sleep(25)
 

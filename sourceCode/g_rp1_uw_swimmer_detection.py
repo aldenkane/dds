@@ -313,7 +313,8 @@ while (True):
     # Section 11: Write 10th Frame to .jpg
     #######################################################
     if N%10 == 0:
-        cv2.imwrite('../last_Image/last_Frame.jpg', img)
+        cv2.imwrite('/home/pi/dds/last_Image/last_Frame.jpg', img)
+        print('Wrote the' + str(N) + 'th frame')
 
     action = cv2.waitKey(1)
     if action==27:

@@ -13,6 +13,9 @@ import time
 import datetime
 from decimal import *
 
+# Allow for System Startup, Camera Warmup
+time.sleep(5)
+
 #######################################################
 # Section 0: References
 #######################################################

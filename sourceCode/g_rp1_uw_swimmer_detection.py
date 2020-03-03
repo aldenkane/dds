@@ -14,7 +14,7 @@ import datetime
 from decimal import *
 
 # Allow for System Startup, Camera Warmup
-time.sleep(5)
+time.sleep(25)
 
 #######################################################
 # Section 0: References
@@ -63,6 +63,7 @@ time.sleep(5)
 # Webcam Capture
 ########################################
 cam = cv2.VideoCapture(0)
+print('Accessed Camera')
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None

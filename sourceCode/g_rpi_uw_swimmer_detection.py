@@ -9,14 +9,6 @@ import cv2
 import numpy as np
 import math
 import time
-#from random import random
-import datetime
-from decimal import *
-
-# Write to Log
-print('When we fall asleep, where do we go')
-# Allow for System Startup, Camera Warmup
-time.sleep(25)
 
 #######################################################
 # Section 0: References
@@ -65,7 +57,6 @@ time.sleep(25)
 # Webcam Capture
 ########################################
 cam = cv2.VideoCapture(0)
-print('Accessed Camera')
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None

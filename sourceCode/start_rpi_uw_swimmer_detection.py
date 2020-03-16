@@ -2,6 +2,8 @@
 # Computer Vision Course (CSE 40535/60535)
 # University of Notre Dame, Fall 2019
 # Combination of detect_UW.py (Color Based Detection) and motionDetect_UW.py (Motion Based Swimmer Detection)
+# Color-based detection code adapted from "colorTracking.py" script by Dr. Adam Czajka, Andrey Kuelkahmp for University of Notre Dame's Fall 2019 CSE 40535/60535 course
+# Motion-based detection code referenced Adrian Rosebrock's "Basic motion detect and tracking with Python and OpenCV" tutorial at https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
 # Improvements made for OptoSwim
 #   Author: Alden Kane
 
@@ -10,99 +12,34 @@ import numpy as np
 import math
 import time
 import logging
-#from random import random
-import datetime
-from decimal import *
 
-# Write to Log
-logging.basicConfig(filename='example.log',level=logging.DEBUG)
+#######################################################
+# Section 0.1: Logging + Camera Warmup
+#######################################################
+
+# Initiate Log Filename based on Time, Location
+time_Tuple = time.localtime()
+# Month.Date.Year_Hour.Sec.Min written in Logs Dir
+log_Filename = '../logs/' + str(time_Tuple[1]) + '.' + str(time_Tuple[2]) + '.' + str(time_Tuple[0]) + '_' + str(time_Tuple[3]) + '.' + str(time_Tuple[4]) + '.' + str(time_Tuple[5]) + '_eye_V0.1.log'
+# Configure Log
+logging.basicConfig(filename=str(log_Filename), level=logging.DEBUG)
 logging.debug('Accessed Log File')
-
 # Allow for System Startup, Camera Warmup
 time.sleep(10)
 
-#######################################################
-# Section 0: References
-#######################################################
-# Color-based detection code adapted from "colorTracking.py" script by Dr. Adam Czajka, Andrey Kuelkahmp for University of Notre Dame's Fall 2019 CSE 40535/60535 course
-# Motion-based detection code referenced Adrian Rosebrock's "Basic motion detect and tracking with Python and OpenCV" tutorial at https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
-
-#######################################################
-# Pre-Processing: Declare Many Video Captures (Uncomment Video to See), Global Variables
-#######################################################
-# Declare some underwater video captures for analysis
-
-# Solo Swimmer, Good Response
-# cam = cv2.VideoCapture('../dataSet/swim2/swim2.1-3-of-5.mp4')
-
-# Two Swimmers, Begin Apart, Come Together at End, Fairly Good Response, Get Some Oscillation in Boxing
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-7-of-14.mp4')
-
-# Two Swimmers, Begin Apart, Come Together, Then Separate, Very Good Response
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
-
-# Two Swimmers, Begin Apart, Come Together, Then Separate, Poor Response for Multiple Swimmers, Good Response for Solo
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-5-of-29.mp4')
-
-# Solo Swimmer, Poor Response from Motion Detection in Middle
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-12-of-29.mp4')
-
-# Solo Swimmer, Poor Response from Motion Detection in Middle
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-13-of-29.mp4')
-
-# Two Solo Swimmers at Separate Times, Poor Response from 1st Swimmer, Good Response from Second Swimmer
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.3-2-of-3.mp4')
-
-# Two Swimmers, Alright Response, As Male swimmer moves out of foreground, detection is lost
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.4-3-of-14.mp4')
-
 ########################################
-# Accuracy Videos at Rock
-########################################
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.3-5-of-9-30fps.mp4')
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.4-2-of-4-30fps.mp4')
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-7-of-10-30fps.mp4')
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-4-of-10-30fps.mp4')
-
-########################################
-# Webcam Capture
+# Section 0.2: Webcam Capture
 ########################################
 cam = cv2.VideoCapture(0)
 logging.info('Accessed Camera')
 
+#######################################################
+# Section 0.3: Global Variables for Accuracy, Underwater Timing Features
+#######################################################
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None
-
-# Initialize Windows
-# cv2.namedWindow("Color Detection: Binary image", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Color Detection: Binary image", 400, 225)
-#
-# cv2.namedWindow("Color Detection: Image after Morphological Operations", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Color Detection: Image after Morphological Operations", 400, 225)
-#
-# cv2.namedWindow("Motion Detection: Binary Image after Morphological Operations", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Motion Detection: Binary Image after Morphological Operations", 400, 225)
-#
-# cv2.namedWindow("Motion Detection: Absolute Difference", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Motion Detection: Absolute Difference", 400, 225)
-#
-# cv2.namedWindow("Motion Detection: First Frame", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Motion Detection: First Frame", 400, 225)
-#
-# cv2.namedWindow("Logical AND'ing of Motion and Color Contours", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("Logical AND'ing of Motion and Color Contours", 400, 225)
-#
-# cv2.namedWindow("DDS: Underwater Video Feed", cv2.WINDOW_NORMAL)
-# cv2.resizeWindow("DDS: Underwater Video Feed", 400, 225)
-# cv2.moveWindow("DDS: Underwater Video Feed", 0, 0)
-
-
-#######################################################
-# Global Variables for Accuracy, Underwater Timing Features
-#######################################################
-# Counter for number of desired samples -- Global Used for accuracy calc.
-N = 0
-
+# Counter for frame iterator
+frames_Processed = 0
 # Global Variables for Timing Feature, Number of Swimmers in Pool
 T = 0.00
 drowningRisk = 0
@@ -111,34 +48,22 @@ numSwimmers = 0
 debounceTimer = 0
 
 #######################################################
-# While Loop for Continuous Processing of Video Stream
+# Section 1: While Loop for Continuous Processing of Video Stream
 #######################################################
 while (True):
     #######################################################
-    # Pre-Processing - Initialize Window Position & Set Timers
+    # Section 1.1: Color + Motion Detection - Read Image
     #######################################################
+    # Set Starting Timer
     starting_Time = time.time()
-
-    # cv2.moveWindow("Color Detection: Binary image", 840, 0)
-    # cv2.moveWindow("Color Detection: Image after Morphological Operations", 0, 300)
-    # cv2.moveWindow("Motion Detection: Binary Image after Morphological Operations", 420, 600)
-    # cv2.moveWindow("Motion Detection: Absolute Difference", 840, 300)
-    # cv2.moveWindow("Motion Detection: First Frame", 420, 300)
-    # cv2.moveWindow("Logical AND'ing of Motion and Color Contours", 420, 0)
-
-    #######################################################
-    # Section 1: Color + Motion Detection - Read Image
-    #######################################################
     # Read image
     retval, img = cam.read()
-    logging.info('In While Loop, Past cam.read')
-
     # Rescale Input Image
     res_scale = 0.5
-    img = cv2.resize(img, (0,0), fx = res_scale, fy = res_scale)
+    img = cv2.resize(img, (0,0), fx=res_scale, fy=res_scale)
 
     #######################################################
-    # Section 2: Color Detection - Set up HSV Color Detection Bounds
+    # Section 1.2: Color Detection - Set up HSV Color Detection Bounds
     #######################################################
     # Declare hsv upper and lower bounds for color image detection
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
@@ -147,7 +72,7 @@ while (True):
     binary_image = cv2.inRange(hsv, lower, upper)
 
     #######################################################
-    # Section 3: Motion Detection - Grayscale Image Processing, Absolute Differencing for Motion Detection, Thresholding
+    # Section 1.3: Motion Detection - Grayscale Image Processing, Absolute Differencing for Motion Detection, Thresholding
     #######################################################
     # Convert to grayscale, apply Gaussian Blur for processing. Saves computing power because motion is independent of color
     # Gaussian smoothing will assist in filtering out high frequency noise from water moving, camera fluctuations, etc.
@@ -165,13 +90,7 @@ while (True):
     thresh = cv2.threshold(delta, 10, 255, cv2.THRESH_BINARY)[1]
 
     #######################################################
-    # Section 4: Color Tracking - Show Binary Feed
-    #######################################################
-    # Debug: Show binary image video feed
-    # cv2.imshow("Color Detection: Binary image", binary_image)
-
-    #######################################################
-    # Section 5: Color Tracking - Clean Up image with morphological operations
+    # Section 1.4: Color Tracking - Clean Up image with morphological operations
     #######################################################
     # Declare kernels of various sizes for experimentation
     kernel_2 = np.ones((2, 2), np.uint8)
@@ -206,11 +125,8 @@ while (True):
     # Dilation to Connect Swim Suits - This adds noise to this binary image, but this is filtered out by logical AND later
     binary_image = cv2.dilate(binary_image, kernel_21, iterations=2)
 
-    # Show binary image after morphological operations for debug
-    # cv2.imshow("Color Detection: Image after Morphological Operations", binary_image)
-
     #######################################################
-    # Section 6: Motion Detection - Perform Morphological Operations, Find Contours, Draw Contours
+    # Section 1.5: Motion Detection - Perform Morphological Operations, Find Contours, Draw Contours
     #######################################################
     # Perform some morphological operations
     # Remove noise from water
@@ -223,7 +139,7 @@ while (True):
     thresh = cv2.dilate(thresh, kernel_40, iterations=4)
 
     #######################################################
-    # Section 7: Perform Logical AND'ing of Binary Image, Implement Size Based Object Detection
+    # Section 1.6: Perform Logical AND'ing of Binary Image, Implement Size Based Object Detection
     #######################################################
     # Perform bitwise AND of motion AND color contours
     binary_intersection = cv2.bitwise_and(thresh, binary_image)
@@ -233,40 +149,26 @@ while (True):
                                            cv2.RETR_TREE,
                                            cv2.CHAIN_APPROX_SIMPLE)
 
-    # Imshow
-    # cv2.imshow("Logical AND'ing of Motion and Color Contours", binary_intersection)
-
     # Ignore bounding boxes smaller than "minObjectSize". Tuned for optimal swimmer detection
     minObjectSize = 80
 
     #######################################################
-    # Section 8: Motion Detection - Show Relevant Images
-    #######################################################
-    # cv2.imshow("Motion Detection: Binary Image after Morphological Operations", thresh)
-    # cv2.imshow("Motion Detection: Absolute Difference", delta)
-    # cv2.imshow("Motion Detection: First Frame", firstFrame)
-
-    #######################################################
-    # Section 9: Object Detection and Localization w/ Drowning Detection Feature Built In
+    # Section 1.7: Object Detection and Localization w/ Drowning Detection Feature Built In
     #######################################################
     # If statement to detect if contours are present
     if contours:
         # Detect all swimmers, i.e. all objects with contours
         for contours in contours:
-
             # use just the first contour to draw a rectangle
             x, y, w, h = cv2.boundingRect(contours)
-
             # If statement to filter out small objects
             if w > minObjectSize or h > minObjectSize:
                 T = T + 1                                   # Iterate on My Time
                 scaled_T = math.ceil(T/FPS)                 # Scaled Time that Accounts for FPS
-
                 if scaled_T >= 10:
                     drowningRisk = 1
                     drowningBox = (0,0,255)
-
-                # Put up boudning boxes w/ Text, If Statement for Timing
+                # Put up bounding boxes w/ Text, If Statement for Timing
                 if not drowningRisk:
                     debounceTimer = (debounceTimer + 1) / FPS
                     if debounceTimer < 0.1:
@@ -312,45 +214,17 @@ while (True):
                 cv2.putText(img, line3_Text, (20, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     #######################################################
-    # Section 10: Show Final DDS Underwater Video Feed, Resize and Move Windows for Display
-    #######################################################
-    # cv2.imshow("DDS: Underwater Video Feed", img)
-
-    #######################################################
-    # Section 11: Write 10th Frame to .jpg
+    # Section 1.8: Write 10th Frame to .jpg, Frame Counter
     #######################################################
     if N%10 == 0:
-        cv2.imwrite('/home/pi/dds/last_Image/last_Frame.jpg', img)
-        logging.info('Wrote the' + str(N) + 'th frame')
+        cv2.imwrite('../last_Image/last_Frame.jpg', img)
+        logging.info('Wrote the ' + str(frames_Processed) + 'th frame')
 
     action = cv2.waitKey(1)
     if action==27:
         break
 
-    # #######################################################
-    # # Section 11: Accuracy Metrics - Images are ClassifIed After, Logged in Excel
-    # # UNCOMMENT TO RETURN 30 RANDOM FRAMES - ONLY NEEDED FOR ACCURACY CALCULATIONS
-    # #######################################################
-    #
-    # # All videos are 30s long, w/ 30 FPS = 900 Frames/Video
-    # # I want 30 frames per video to classify for Intersection over Union
-    # # Below is code to give me 30 random frames
-    #
-    # # Generate random floating point number between 0 and 1
-    # R = random()
-    #
-    # # Generate a threshold for the number of desired samples
-    # nSamples = (FPS/900)
-    #
-    # # Declare a write location
-    # write_location = "../accuracy/" + str(N) + ".jpg"
-    #
-    # # Only write 30 samples
-    # if N <= 30:
-    #     if R < nSamples:
-    #         cv2.imwrite(str(write_location), img)
-
     # Global Counter of Frames Processed
-    N = N + 1
+    frames_Processed = frames_Processed + 1
 
 cv2.destroyAllWindows()

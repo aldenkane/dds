@@ -74,27 +74,27 @@ logging.info('Accessed Camera')
 firstFrame = None
 
 # Initialize Windows
-cv2.namedWindow("Color Detection: Binary image", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Color Detection: Binary image", 400, 225)
-
-cv2.namedWindow("Color Detection: Image after Morphological Operations", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Color Detection: Image after Morphological Operations", 400, 225)
-
-cv2.namedWindow("Motion Detection: Binary Image after Morphological Operations", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Motion Detection: Binary Image after Morphological Operations", 400, 225)
-
-cv2.namedWindow("Motion Detection: Absolute Difference", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Motion Detection: Absolute Difference", 400, 225)
-
-cv2.namedWindow("Motion Detection: First Frame", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Motion Detection: First Frame", 400, 225)
-
-cv2.namedWindow("Logical AND'ing of Motion and Color Contours", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("Logical AND'ing of Motion and Color Contours", 400, 225)
-
-cv2.namedWindow("DDS: Underwater Video Feed", cv2.WINDOW_NORMAL)
-cv2.resizeWindow("DDS: Underwater Video Feed", 400, 225)
-cv2.moveWindow("DDS: Underwater Video Feed", 0, 0)
+# cv2.namedWindow("Color Detection: Binary image", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("Color Detection: Binary image", 400, 225)
+#
+# cv2.namedWindow("Color Detection: Image after Morphological Operations", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("Color Detection: Image after Morphological Operations", 400, 225)
+#
+# cv2.namedWindow("Motion Detection: Binary Image after Morphological Operations", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("Motion Detection: Binary Image after Morphological Operations", 400, 225)
+#
+# cv2.namedWindow("Motion Detection: Absolute Difference", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("Motion Detection: Absolute Difference", 400, 225)
+#
+# cv2.namedWindow("Motion Detection: First Frame", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("Motion Detection: First Frame", 400, 225)
+#
+# cv2.namedWindow("Logical AND'ing of Motion and Color Contours", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("Logical AND'ing of Motion and Color Contours", 400, 225)
+#
+# cv2.namedWindow("DDS: Underwater Video Feed", cv2.WINDOW_NORMAL)
+# cv2.resizeWindow("DDS: Underwater Video Feed", 400, 225)
+# cv2.moveWindow("DDS: Underwater Video Feed", 0, 0)
 
 
 #######################################################
@@ -119,18 +119,19 @@ while (True):
     #######################################################
     starting_Time = time.time()
 
-    cv2.moveWindow("Color Detection: Binary image", 840, 0)
-    cv2.moveWindow("Color Detection: Image after Morphological Operations", 0, 300)
-    cv2.moveWindow("Motion Detection: Binary Image after Morphological Operations", 420, 600)
-    cv2.moveWindow("Motion Detection: Absolute Difference", 840, 300)
-    cv2.moveWindow("Motion Detection: First Frame", 420, 300)
-    cv2.moveWindow("Logical AND'ing of Motion and Color Contours", 420, 0)
+    # cv2.moveWindow("Color Detection: Binary image", 840, 0)
+    # cv2.moveWindow("Color Detection: Image after Morphological Operations", 0, 300)
+    # cv2.moveWindow("Motion Detection: Binary Image after Morphological Operations", 420, 600)
+    # cv2.moveWindow("Motion Detection: Absolute Difference", 840, 300)
+    # cv2.moveWindow("Motion Detection: First Frame", 420, 300)
+    # cv2.moveWindow("Logical AND'ing of Motion and Color Contours", 420, 0)
 
     #######################################################
     # Section 1: Color + Motion Detection - Read Image
     #######################################################
     # Read image
     retval, img = cam.read()
+    logging.info('In While Loop, Past cam.read')
 
     # Rescale Input Image
     res_scale = 0.5
@@ -167,7 +168,7 @@ while (True):
     # Section 4: Color Tracking - Show Binary Feed
     #######################################################
     # Debug: Show binary image video feed
-    cv2.imshow("Color Detection: Binary image", binary_image)
+    # cv2.imshow("Color Detection: Binary image", binary_image)
 
     #######################################################
     # Section 5: Color Tracking - Clean Up image with morphological operations
@@ -206,7 +207,7 @@ while (True):
     binary_image = cv2.dilate(binary_image, kernel_21, iterations=2)
 
     # Show binary image after morphological operations for debug
-    cv2.imshow("Color Detection: Image after Morphological Operations", binary_image)
+    # cv2.imshow("Color Detection: Image after Morphological Operations", binary_image)
 
     #######################################################
     # Section 6: Motion Detection - Perform Morphological Operations, Find Contours, Draw Contours
@@ -233,7 +234,7 @@ while (True):
                                            cv2.CHAIN_APPROX_SIMPLE)
 
     # Imshow
-    cv2.imshow("Logical AND'ing of Motion and Color Contours", binary_intersection)
+    # cv2.imshow("Logical AND'ing of Motion and Color Contours", binary_intersection)
 
     # Ignore bounding boxes smaller than "minObjectSize". Tuned for optimal swimmer detection
     minObjectSize = 80
@@ -241,9 +242,9 @@ while (True):
     #######################################################
     # Section 8: Motion Detection - Show Relevant Images
     #######################################################
-    cv2.imshow("Motion Detection: Binary Image after Morphological Operations", thresh)
-    cv2.imshow("Motion Detection: Absolute Difference", delta)
-    cv2.imshow("Motion Detection: First Frame", firstFrame)
+    # cv2.imshow("Motion Detection: Binary Image after Morphological Operations", thresh)
+    # cv2.imshow("Motion Detection: Absolute Difference", delta)
+    # cv2.imshow("Motion Detection: First Frame", firstFrame)
 
     #######################################################
     # Section 9: Object Detection and Localization w/ Drowning Detection Feature Built In
@@ -313,7 +314,7 @@ while (True):
     #######################################################
     # Section 10: Show Final DDS Underwater Video Feed, Resize and Move Windows for Display
     #######################################################
-    cv2.imshow("DDS: Underwater Video Feed", img)
+    # cv2.imshow("DDS: Underwater Video Feed", img)
 
     #######################################################
     # Section 11: Write 10th Frame to .jpg

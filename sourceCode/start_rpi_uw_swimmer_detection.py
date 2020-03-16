@@ -9,14 +9,17 @@ import cv2
 import numpy as np
 import math
 import time
+import logging
 #from random import random
 import datetime
 from decimal import *
 
 # Write to Log
-print('When we fall asleep, where do we go')
+logging.basicConfig(filename='example.log',level=logging.DEBUG)
+logging.debug('Accessed Log File')
+
 # Allow for System Startup, Camera Warmup
-time.sleep(5)
+time.sleep(10)
 
 #######################################################
 # Section 0: References
@@ -65,7 +68,7 @@ time.sleep(5)
 # Webcam Capture
 ########################################
 cam = cv2.VideoCapture(0)
-print('Accessed Camera')
+logging.info('Accessed Camera')
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None
@@ -317,7 +320,7 @@ while (True):
     #######################################################
     if N%10 == 0:
         cv2.imwrite('/home/pi/dds/last_Image/last_Frame.jpg', img)
-        print('Wrote the' + str(N) + 'th frame')
+        logging.info('Wrote the' + str(N) + 'th frame')
 
     action = cv2.waitKey(1)
     if action==27:

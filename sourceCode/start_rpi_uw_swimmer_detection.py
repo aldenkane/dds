@@ -216,7 +216,7 @@ while (True):
     #######################################################
     # Section 1.8: Write 10th Frame to .jpg, Frame Counter
     #######################################################
-    if N%10 == 0:
+    if frames_Processed%10 == 0:
         cv2.imwrite('../last_Image/last_Frame.jpg', img)
         logging.info('Wrote the ' + str(frames_Processed) + 'th frame')
 

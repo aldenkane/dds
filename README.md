@@ -51,8 +51,6 @@ npm install parse --save
 
 ## Execute Write to OptoSwim back4app Image class
 
-Edit file path in parse.js file to 'latestImage' current location
-
 Run 
 ```
 node parse.js

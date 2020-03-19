@@ -42,6 +42,22 @@ python3 uw_swimmer_detection.py
 
 Testing by Alden Kane showed an Intersection over Union (IoU) of approximately 0.81 ± 0.12 on the train and validation sets. The test set, sourced from Rockne Memorial Pool, showed lower classificaiton accuracy due to poor overhead illumination in the pool.
 
+## Parse install on Rasberry Pi
+
+Install npm module in project or root directory
+```
+npm install parse --save
+```
+
+## Execute Write to OptoSwim back4app Image class
+
+Edit file path in parse.js file to 'latestImage' current location
+
+Run 
+```
+node parse.js
+```
+Image class should show new instance with json object and image file attached.
 
 ## Future Improvements
 

@@ -51,11 +51,17 @@ npm install parse --save
 
 ## Execute Write to OptoSwim back4app Image class
 
+Function Arguments
+
+swimDetected --> Boolean
+numberSwimmers --> Integer 
+drownDetected --> Boolean
+
 Run 
 ```
 node parse.js
 ```
-Image class should show new instance with json object and image file attached.
+Image class should show new instance with image file and argument values appended.
 
 ## Future Improvements
 

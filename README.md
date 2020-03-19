@@ -53,9 +53,9 @@ npm install parse --save
 
 Function Arguments:
 
-swimDetected --> Boolean. 
-numberSwimmers --> Integer. 
-drownDetected --> Boolean. 
+swimDetected --> Boolean __
+numberSwimmers --> Integer__
+drownDetected --> Boolean __
 
 Run 
 ```

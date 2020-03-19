@@ -51,7 +51,7 @@ npm install parse --save
 
 ## Execute Write to OptoSwim back4app Image class
 
-Function Arguments
+Function Arguments:
 
 ..* swimDetected --> Boolean
 ..* numberSwimmers --> Integer 

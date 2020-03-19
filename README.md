@@ -44,9 +44,10 @@ Testing by Alden Kane showed an Intersection over Union (IoU) of approximately 0
 
 ## Parse install on Rasberry Pi
 
-Install npm module in project or root directory
+Install npm modules in project or root directory
 ```
 npm install parse --save
+npm install btoa --save
 ```
 
 ## Execute Write to OptoSwim back4app Image class
@@ -61,9 +62,9 @@ drownDetected --> Boolean
 
 Run 
 ```
-node parse.js
+node parsePi.js
 ```
-Image class should show new instance with image file and argument values appended.
+Image class should show new instance with image file as base64 encoded string and argument values appended.
 
 ## Future Improvements
 

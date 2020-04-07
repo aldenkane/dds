@@ -54,7 +54,7 @@ npm install btoa --save
 
 Usage:
 ```
-//require function form module
+//require function from module
 const sendImage = require('./parsePi.js');
 
 //call function with filePath as argument

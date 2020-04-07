@@ -66,7 +66,7 @@ Function Arguments:
 
 filePath --> takes relative file path as a string.
 
-Reads JSON file of form
+Reads JSON file of from
 
 {
 "swimDetected": "Boolean" 

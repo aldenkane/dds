@@ -76,10 +76,6 @@ Reads JSON file of from
 "drownDetected": "Boolean"
 } 
 
-Run 
-```
-node parsePi.js
-```
 Image class should show new instance with image file as base64 encoded string and argument values appended on Parse server
 
 ## Future Improvements

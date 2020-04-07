@@ -52,6 +52,16 @@ npm install btoa --save
 
 ## Execute Write to OptoSwim back4app Image class
 
+Usage:
+```
+//require function form module
+const sendImage = require('./parsePi.js');
+
+//call function with filePath as argument
+sendImage(filePath);
+
+```
+
 Function Arguments:
 
 filePath --> takes relative file path as a string.

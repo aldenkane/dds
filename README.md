@@ -54,17 +54,23 @@ npm install btoa --save
 
 Function Arguments:
 
-swimDetected --> Boolean 
+filePath --> takes relative file path as a string.
 
-numberSwimmers --> Integer
+Reads JSON file of form
 
-drownDetected --> Boolean 
+{
+"swimDetected": "Boolean" 
+
+"numberSwimmers": "Integer"
+
+"drownDetected": "Boolean"
+} 
 
 Run 
 ```
 node parsePi.js
 ```
-Image class should show new instance with image file as base64 encoded string and argument values appended.
+Image class should show new instance with image file as base64 encoded string and argument values appended on Parse server
 
 ## Future Improvements
 

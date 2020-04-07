@@ -11,18 +11,21 @@ Parse.initialize(
 );
 
 //Create object in Image class linked to specific user
-
-function sendImage(fileName, swimmerDetected, numberSwimmers, drowningDetected){
+export default sendImage = filePath => {
+  
+  //Load JSON file into javscript object
+  let obj = JSON.parse(fs.readFileSync(filePath))
+ 
   const Images = Parse.Object.extend('Images');
   const image = new Images();
+  
+  image.set('image', new Parse.File(filePath, { base64: btoa(filePath) }));
+  image.set('swimmerDetected', obj.swimmerDetected);
+  image.set('numberSwimmers', obj.numberSwimmers);
+  image.set('Emergency', obj.drowningDetected);
+  image.set('user', Parse.User.current());
 
-  image.set('image', new Parse.File(fileName, { base64: btoa(fileName) }));
-  image.set('swimmerDetected', swimmerDetected);
-  image.set('numberSwimmers', numberSwimmers);
-  image.set('Emergency', drowningDetected);
-  iamge.set('user', Parse.User.current());
-
-  myNewObject.save().then(
-    console.log('The image has been sent to the Parse server, let's fucking go!)
+  image.save().then(
+    console.log('The image has been sent to the Parse server, let\'s fucking go!)
   );
 };

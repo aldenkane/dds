@@ -14,20 +14,25 @@ Parse.initialize(
 //Create object in Image class linked to specific user
 const sendImage = (imgFilePath) => {
   fs.watch(imgFilePath, (event, filename) => {
-    if (filename && event === 'change'){
-      //Load JSON file into javscript object
-      //let obj = JSON.parse(fs.readFileSync(jsonFilePath))
-      const Images = Parse.Object.extend('Images');
-      const image = new Images();
-     //const imgFilePath = obj.imageFilePath
-      image.set('image', new Parse.File(imgFilePath, { base64: btoa(imgFilePath) }));
-     // image.set('swimDetected', obj.swimmerDetected);
-      //image.set('numberSwimmers', obj.numberSwimmers);
-      //image.set('drownDetected', obj.drowningDetected);
-      //image.set('user', Parse.User.current());
-      image.save()
-     }
-   })
+    if (filename){
+        try{
+          console.log(`${filename} file changed`)
+          //Load JSON file into javscript object
+          //let obj = JSON.parse(fs.readFileSync(jsonFilePath))
+          const Images = Parse.Object.extend('Images');
+          const image = new Images();
+         //const imgFilePath = obj.imageFilePath
+          image.set('image', new Parse.File(imgFilePath, { base64: btoa(imgFilePath) }));
+         // image.set('swimDetected', obj.swimmerDetected);
+          //image.set('numberSwimmers', obj.numberSwimmers);
+          //image.set('drownDetected', obj.drowningDetected);
+          //image.set('user', Parse.User.current());
+          image.save()
+        } catch (ex) {
+          console.log(ex);
+       }
+    }
+  })
 };
 
 sendImage('./last_Image/last_Frame.jpg');

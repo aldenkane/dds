@@ -24,9 +24,7 @@ const sendImage = (imgFilePath) => {
       //image.set('numberSwimmers', obj.numberSwimmers);
       //image.set('drownDetected', obj.drowningDetected);
       //image.set('user', Parse.User.current());
-      image.save().then(
-        console.log('The image has been sent to the Parse server, lets fucking go!');
-      );
+      image.save()
      }
    })
 };

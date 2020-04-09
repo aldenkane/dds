@@ -30,4 +30,4 @@ const sendImage = (imgFilePath) => {
    })
 };
 
-sendImage('./last_Image/lastFrame.jpg');
+sendImage('./last_Image/last_Frame.jpg');

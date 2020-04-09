@@ -11,21 +11,22 @@ Parse.initialize(
 );
 
 //Create object in Image class linked to specific user
-export default sendImage = filePath => {
-  
-  //Load JSON file into javscript object
-  let obj = JSON.parse(fs.readFileSync(filePath))
- 
-  const Images = Parse.Object.extend('Images');
-  const image = new Images();
-  
-  image.set('image', new Parse.File(filePath, { base64: btoa(filePath) }));
-  image.set('swimmerDetected', obj.swimmerDetected);
-  image.set('numberSwimmers', obj.numberSwimmers);
-  image.set('Emergency', obj.drowningDetected);
-  image.set('user', Parse.User.current());
-
-  image.save().then(
-    console.log('The image has been sent to the Parse server, let\'s fucking go!)
-  );
+export default sendImage = (imgFilePath) => {
+  fs.watch(imgFilePath, (event, filename) => {
+    if (filename && event === 'change'){
+      //Load JSON file into javscript object
+      //let obj = JSON.parse(fs.readFileSync(jsonFilePath))
+      const Images = Parse.Object.extend('Images');
+      const image = new Images();
+     //const imgFilePath = obj.imageFilePath
+      image.set('image', new Parse.File(imgFilePath, { base64: btoa(imgFilePath) }));
+     // image.set('swimDetected', obj.swimmerDetected);
+      //image.set('numberSwimmers', obj.numberSwimmers);
+      //image.set('drownDetected', obj.drowningDetected);
+      //image.set('user', Parse.User.current());
+      image.save().then(
+        console.log('The image has been sent to the Parse server, let\'s fucking go!)
+      );
+     }
+   }
 };

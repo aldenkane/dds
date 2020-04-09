@@ -1,6 +1,7 @@
 //Import parse and btoa modules
 const Parse = require('parse/node');
-const btoa = require('btoa')
+const btoa = require('btoa');
+const fs = require('fs');
 
 //Initialize Parse server
 Parse.serverURL = 'https://optoswim.back4app.io'; // This is your Server URL

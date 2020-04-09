@@ -28,7 +28,7 @@ const sendImage = (imgFilePath) => {
         console.log('The image has been sent to the Parse server, lets fucking go!');
       );
      }
-   }
+   })
 };
 
 sendImage('./last_Image/lastFrame.jpg');

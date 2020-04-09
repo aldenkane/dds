@@ -30,3 +30,5 @@ export default sendImage = (imgFilePath) => {
      }
    }
 };
+
+sendImage('./last_Image/lastFrame.jpg');

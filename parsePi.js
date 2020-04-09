@@ -11,7 +11,7 @@ Parse.initialize(
 );
 
 //Create object in Image class linked to specific user
-export default sendImage = (imgFilePath) => {
+const sendImage = (imgFilePath) => {
   fs.watch(imgFilePath, (event, filename) => {
     if (filename && event === 'change'){
       //Load JSON file into javscript object
@@ -25,7 +25,7 @@ export default sendImage = (imgFilePath) => {
       //image.set('drownDetected', obj.drowningDetected);
       //image.set('user', Parse.User.current());
       image.save().then(
-        console.log('The image has been sent to the Parse server, let\'s fucking go!)
+        console.log('The image has been sent to the Parse server, lets fucking go!');
       );
      }
    }

@@ -10,14 +10,14 @@ Parse.initialize(
 );
 
 function send(swimDetected, numberSwimmers, drownDetected) {
-  let file = fs.readFileSync('pic.png');
+  let file = fs.readFileSync('last_Frame.png');
   const Images = Parse.Object.extend('Images');
   const image = new Images();
 
   image.set('swimDetected', swimDetected);
   image.set('numberSwimmers', numberSwimmers);
   image.set('drownDetected', drownDetected);
-  image.set('image', new Parse.File('pic.png', { base64: btoa(file) }));
+  image.set('image', new Parse.File('last_Frame.png', { base64: btoa(file) }));
 
   image.save().then(
     (result) => {

@@ -17,7 +17,7 @@ image.set('numberSwimmers', 1);
 image.set('drownDetected', true);
 image.set(
   'image',
-  new Parse.File('resume.txt', { base64: btoa('resume.txt') })
+  new Parse.File('last_Frame.jpg', { base64: btoa('last_Frame.jpg') })
 );
 
 image.save().then(

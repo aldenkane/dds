@@ -12,6 +12,7 @@ import numpy as np
 import math
 import time
 import logging
+from ez_cv import write_pool_info_json
 
 #######################################################
 # Section 0.1: Logging + Camera Warmup
@@ -46,6 +47,13 @@ drowningRisk = 0
 FPS = 30
 numSwimmers = 0
 debounceTimer = 0
+
+# JSON file stuff
+SERIAL_NO = '0001'
+JSON_FILE_PATH = '../last_Image/event.json'
+SWIMMER_DETECTED = 0
+NUMBER_SWIMMERS = 0
+DROWNING_DETECT = 0
 
 #######################################################
 # Section 1: While Loop for Continuous Processing of Video Stream
@@ -219,6 +227,7 @@ while (True):
     if frames_Processed%10 == 0:
         cv2.imwrite('../last_Image/last_Frame.jpg', img)
         logging.info('Wrote the ' + str(frames_Processed) + 'th frame')
+        write_pool_info_json(SWIMMER_DETECTED, NUMBER_SWIMMERS, DROWNING_DETECT, SERIAL_NO, JSON_FILE_PATH)
 
     action = cv2.waitKey(1)
     if action==27:

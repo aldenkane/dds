@@ -50,7 +50,7 @@ def find_bottom_line(frame):
     return frame
 
 
-def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, filepath):
+def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, serialNo, filepath):
     # Function to format JSON data for transmission to Parse server
     # swimDetected = Bool
     # numberSwimmers = int
@@ -61,6 +61,7 @@ def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, filepath):
             'swimDetected':'{}'.format(swimDetected),
             'numberSwimmers':'{}'.format(numberSwimmers),
             'drownDetected':'{}'.format(drownDetected),
+            'serialNo':'{}'.format(serialNo),
         }
         json.dump(data, file)
 

@@ -34,9 +34,9 @@ function send(swimDetected, numberSwimmers, drownDetected, serialNo) {
   );
 }
 
-fs.watch('./event.json', (event, filename) => {
+fs.watch('../last_Image/event.json', (event, filename) => {
   if (filename) {
-    let jsObj = JSON.parse(fs.readFileSync('./event.json'));
+    let jsObj = JSON.parse(fs.readFileSync('../last_Image/event.json'));
     send(
       jsObj.swimDetected,
       parseInt(jsObj.numberSwimmers),

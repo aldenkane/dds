@@ -9,7 +9,7 @@ Parse.initialize(
   'HSNUMKsUeTtNjTxOIPB2ct3FIiD6NMJp7yc5w9WW' // This is your Master key (never use it in the frontend)
 );
 
-function send(swimDetected, numberSwimmers, drownDetected) {
+function send(swimDetected, numberSwimmers, drownDetected, serialNo) {
   let file = fs.readFileSync('last_Frame.jpg');
   const Images = Parse.Object.extend('Images');
   const image = new Images();
@@ -17,6 +17,7 @@ function send(swimDetected, numberSwimmers, drownDetected) {
   image.set('swimDetected', swimDetected);
   image.set('numberSwimmers', numberSwimmers);
   image.set('drownDetected', drownDetected);
+  image.set('serialNo', serialNo):
   image.set('image', new Parse.File('last_Frame.jpg', { base64: btoa(file) }));
 
   image.save().then(
@@ -39,7 +40,8 @@ fs.watch('./event.json', (event, filename) => {
     send(
       jsObj.swimDetected,
       parseInt(jsObj.numberSwimmers),
-      jsObj.drownDetected
+      jsObj.drownDetected,
+      jsObj.serialNo
     );
   }
 });

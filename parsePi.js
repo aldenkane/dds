@@ -10,7 +10,7 @@ Parse.initialize(
 );
 
 function send(swimDetected, numberSwimmers, drownDetected, serialNo) {
-  let file = fs.readFileSync('last_Frame.jpg');
+  let file = fs.readFileSync('../last_Image/last_Frame.jpg');
   const Images = Parse.Object.extend('Images');
   const image = new Images();
 

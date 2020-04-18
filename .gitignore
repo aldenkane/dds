@@ -1,3 +1,4 @@
 env
 dataSet/
 darknet/yolov3.weights
+yolo/yolov3_custom_train_final.weights

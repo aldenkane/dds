@@ -17,7 +17,7 @@ function send(swimDetected, numberSwimmers, drownDetected, serialNo) {
   image.set('swimDetected', swimDetected);
   image.set('numberSwimmers', numberSwimmers);
   image.set('drownDetected', drownDetected);
-  image.set('serialNo', serialNo):
+  image.set('serialNo', serialNo);
   image.set('image', new Parse.File('last_Frame.jpg', { base64: btoa(file) }));
 
   image.save().then(

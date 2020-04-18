@@ -51,9 +51,9 @@ debounceTimer = 0
 # JSON file stuff
 SERIAL_NO = '0001'
 JSON_FILE_PATH = '../last_Image/event.json'
-SWIMMER_DETECTED = 0
-NUMBER_SWIMMERS = 0
-DROWNING_DETECT = 0
+SWIMMER_DETECTED = True
+NUMBER_SWIMMERS = 6
+DROWNING_DETECT = True
 
 #######################################################
 # Section 1: While Loop for Continuous Processing of Video Stream

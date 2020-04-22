@@ -139,7 +139,7 @@ colors = np.random.uniform(0, 255, size=(len(classes), 3))
 #######################################################
 # While Loop for Continuous Processing of Video Stream
 #######################################################
-while (True):
+while True:
     #######################################################
     # Pre-Processing - Initialize Window Position & Set Timers
     #######################################################

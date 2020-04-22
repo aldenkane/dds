@@ -58,10 +58,10 @@ def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, serialNo, 
     # filepath = string
     with open(str(filepath), 'w', encoding='utf-8') as file:
         data = {
-            'swimDetected':'{}'.format(swimDetected),
-            'numberSwimmers':'{}'.format(numberSwimmers),
-            'drownDetected':'{}'.format(drownDetected),
-            'serialNo':'{}'.format(serialNo),
+            'swimDetected': bool(swimDetected),
+            'numberSwimmers': '{}'.format(numberSwimmers),
+            'drownDetected': bool(drownDetected),
+            'serialNo': '{}'.format(serialNo)
         }
         json.dump(data, file)
 

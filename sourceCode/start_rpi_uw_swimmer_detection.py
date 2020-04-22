@@ -1,10 +1,5 @@
-# Underwater Swimmer Detection, Term Project
-# Computer Vision Course (CSE 40535/60535)
-# University of Notre Dame, Fall 2019
-# Combination of detect_UW.py (Color Based Detection) and motionDetect_UW.py (Motion Based Swimmer Detection)
-# Color-based detection code adapted from "colorTracking.py" script by Dr. Adam Czajka, Andrey Kuelkahmp for University of Notre Dame's Fall 2019 CSE 40535/60535 course
-# Motion-based detection code referenced Adrian Rosebrock's "Basic motion detect and tracking with Python and OpenCV" tutorial at https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
-# Improvements made for OptoSwim
+# start_rpi_uw_swimmer_detection.py
+# A python
 #   Author: Alden Kane
 
 import cv2
@@ -19,12 +14,13 @@ from ez_cv import write_pool_info_json
 #######################################################
 
 # Initiate Log Filename based on Time, Location
-time_Tuple = time.localtime()
-# Month.Date.Year_Hour.Sec.Min written in Logs Dir
-log_Filename = '../logs/' + str(time_Tuple[1]) + '.' + str(time_Tuple[2]) + '.' + str(time_Tuple[0]) + '_' + str(time_Tuple[3]) + '.' + str(time_Tuple[4]) + '.' + str(time_Tuple[5]) + '_eye_V0.1.log'
 # Configure Log
+# Month.Date.Year_Hour.Sec.Min written in Logs Dir
+time_Tuple = time.localtime()
+log_Filename = '../logs/' + str(time_Tuple[1]) + '.' + str(time_Tuple[2]) + '.' + str(time_Tuple[0]) + '_' + str(time_Tuple[3]) + '.' + str(time_Tuple[4]) + '.' + str(time_Tuple[5]) + '_eye_V0.1.log'
 logging.basicConfig(filename=str(log_Filename), level=logging.DEBUG)
 logging.debug('Accessed Log File')
+
 # Allow for System Startup, Camera Warmup
 time.sleep(10)
 
@@ -43,17 +39,15 @@ firstFrame = None
 frames_Processed = 0
 # Global Variables for Timing Feature, Number of Swimmers in Pool
 T = 0.00
-drowningRisk = 0
 FPS = 30
-numSwimmers = 0
 debounceTimer = 0
 
 # JSON file stuff
 SERIAL_NO = '0001'
 JSON_FILE_PATH = '../last_Image/event.json'
-SWIMMER_DETECTED = True
-NUMBER_SWIMMERS = 6
-DROWNING_DETECT = True
+SWIMMER_DETECTED = False
+NUMBER_SWIMMERS = 0
+DROWNING_DETECT = False
 
 #######################################################
 # Section 1: While Loop for Continuous Processing of Video Stream
@@ -88,7 +82,7 @@ while (True):
     gray_Img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray_Img = cv2.GaussianBlur(gray_Img, (15, 15), 0)
 
-    # Initialize first frame. This will only set the first frame once. Now, can compute difference between current frame and this.
+    # Initialize first frame. This will only set the first frame once. Now, can compute difference between current frame and this
     if firstFrame is None:
         firstFrame = gray_Img
         continue
@@ -166,6 +160,7 @@ while (True):
     # If statement to detect if contours are present
     if contours:
         # Detect all swimmers, i.e. all objects with contours
+        NUMBER_SWIMMERS = 0
         for contours in contours:
             # use just the first contour to draw a rectangle
             x, y, w, h = cv2.boundingRect(contours)
@@ -173,29 +168,31 @@ while (True):
             if w > minObjectSize or h > minObjectSize:
                 T = T + 1                                   # Iterate on My Time
                 scaled_T = math.ceil(T/FPS)                 # Scaled Time that Accounts for FPS
-                if scaled_T >= 10:
-                    drowningRisk = 1
-                    drowningBox = (0,0,255)
+                NUMBER_SWIMMERS = NUMBER_SWIMMERS + 1       # For each bounding box of sufficient size, iterate on swimmers
+                if scaled_T >= 15:
+                    DROWNING_DETECT = True
+                    drowningBox = (0, 0, 255)
                 # Put up bounding boxes w/ Text, If Statement for Timing
-                if not drowningRisk:
+                # Logic to handle oscillating boxes
+                if not DROWNING_DETECT:
                     debounceTimer = (debounceTimer + 1) / FPS
                     if debounceTimer < 0.1:
                         T = T + 1
                         scaled_T = math.ceil(T / FPS)
                     elif debounceTimer > 1:
                         T = 0
-                        drowningRisk = 0
+                        DROWNING_DETECT = False
                     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
-                    cv2.putText(img,  # image
-                                "Swimmer(s)",  # text
-                                (x, y - 10),  # start position
-                                cv2.FONT_HERSHEY_SIMPLEX,  # font
-                                0.7,  # size
-                                (0, 255, 0),  # BGR color
-                                1,  # thickness
-                                cv2.LINE_AA)  # type of line
+                    cv2.putText(img,                        # image
+                                "Swimmer(s)",               # text
+                                (x, y - 10),                # start position
+                                cv2.FONT_HERSHEY_SIMPLEX,   # font
+                                0.7,                        # size
+                                (0, 255, 0),                # BGR color
+                                1,                          # thickness
+                                cv2.LINE_AA)                # type of line
                     cv2.drawContours(img, contours, -1, (255, 0, 0), 3)
-                elif drowningRisk:
+                elif DROWNING_DETECT:
                     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 3)
                     cv2.putText(img,  # image
                                 "Swimmer(s)",  # text
@@ -207,15 +204,12 @@ while (True):
                                 cv2.LINE_AA)  # type of line
                     cv2.drawContours(img, contours, -1, (255, 0, 0), 3)
 
-                # Get number of swimmers in pool from length of contours
-                # numSwimmers = len(contours)
-
                 # Measure FPS that Script Runs At:
                 measured_FPS = (1 / (time.time() - starting_Time))
 
                 # Text on Screen for Primitive Lifeguard UI
                 line1_Text = "Time Underwater: {} second(s)".format(scaled_T)  # Format Text for Screen Putting
-                line2_Text = "Drowning Risk: ({})".format(drowningRisk)
+                line2_Text = "Drowning Risk: ({})".format(DROWNING_DETECT)
                 line3_Text = "FPS: ({})".format(measured_FPS)
                 cv2.putText(img, line1_Text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
                 cv2.putText(img, line2_Text, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
@@ -227,6 +221,8 @@ while (True):
     if frames_Processed%10 == 0:
         cv2.imwrite('../last_Image/last_Frame.jpg', img)
         logging.info('Wrote the ' + str(frames_Processed) + 'th frame')
+        # Tie swimmer detected to the number of swimmers in the pool
+        SWIMMER_DETECTED = bool(NUMBER_SWIMMERS)
         write_pool_info_json(SWIMMER_DETECTED, NUMBER_SWIMMERS, DROWNING_DETECT, SERIAL_NO, JSON_FILE_PATH)
 
     action = cv2.waitKey(1)

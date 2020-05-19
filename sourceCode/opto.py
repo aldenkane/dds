@@ -10,6 +10,7 @@ import json
 # Function to Run YOLO for dds
 def dds_yolo(frame, net, output_layers, classes):
     height, width, channels = frame.shape   # Get img shape for CV2 Blob
+    yolo_swimmer_count = 0
     # Normalize input frame using blobFromImage, SwapRB Codes, and Scale Value to 1/255
     blob = cv2.dnn.blobFromImage(frame, scalefactor=1 / 255, size=(320, 320), mean=0, swapRB=True, crop=False)
     net.setInput(blob)                      # Set input of the net
@@ -58,8 +59,10 @@ def dds_yolo(frame, net, output_layers, classes):
                             (255, 0, 0),                # BGR color
                             1,                          # thickness
                             cv2.LINE_AA)                # type of line
+                yolo_swimmer_count += 1
 
-    return frame
+    return frame, yolo_swimmer_count
+
 
 def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, serialNo, filepath):
     # Function to format JSON data for transmission to Parse server
@@ -75,3 +78,5 @@ def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, serialNo, 
             'serialNo': '{}'.format(serialNo)
         }
         json.dump(data, file)
+
+

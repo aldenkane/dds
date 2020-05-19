@@ -1,6 +1,7 @@
-# start_rpi_uw_swimmer_detection.py
-# RPI Startup Script for OptoSwim
+# eye.py
+# Production code for Raspberry Pi OptoSwim Eye Module
 #   Author: Alden Kane
+#   Property of OptoSwim
 
 import cv2
 import numpy as np
@@ -10,149 +11,112 @@ import logging
 from ez_cv import write_pool_info_json
 
 #######################################################
-# Section 0.1: Logging + Camera Warmup
+# Coding Conventions
 #######################################################
+''' -All variables transported off of module are UPPER_CASE
+    -Algorithms that take more than 10 lines are turned into functions
+    -All functions housed in opto.py
+    -frame used as default var name for CV processing
+'''
 
-# Initiate Log Filename based on Time, Location
-# Configure Log
-# Month.Date.Year_Hour.Sec.Min written in Logs Dir
-time_Tuple = time.localtime()
-log_Filename = '../logs/' + str(time_Tuple[1]) + '.' + str(time_Tuple[2]) + '.' + str(time_Tuple[0]) + '_' + str(time_Tuple[3]) + '.' + str(time_Tuple[4]) + '.' + str(time_Tuple[5]) + '_eye_V0.1.log'
-logging.basicConfig(filename=str(log_Filename), level=logging.DEBUG)
-logging.debug('Accessed Log File')
+#######################################################
+# Initiate Logging + Camera Read + Declare Globals
+#######################################################
+time_tuple = time.localtime()                           # Unpack time tuple
+log_filename = '../logs/' + str(time_tuple[1]) + '.' + str(time_tuple[2]) + '.' + str(time_tuple[0]) + '_' + str(time_tuple[3]) + '.' + str(time_tuple[4]) + '.' + str(time_tuple[5]) + '_eye_V0.1.log'
+logging.basicConfig(filename=str(log_filename), level=logging.DEBUG)
 
-# Allow for System Startup, Camera Warmup
-time.sleep(10)
-
-########################################
-# Section 0.2: Webcam Capture
-########################################
-cam = cv2.VideoCapture(0)
+time.sleep(10)                                          # Camera warmup
+cam = cv2.VideoCapture(0)                               # Camera capture
 logging.info('Accessed Camera')
 
-#######################################################
-# Section 0.3: Global Variables for Accuracy, Underwater Timing Features
-#######################################################
-# Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
-firstFrame = None
-# Counter for frame iterator
-frames_Processed = 0
-# Global Variables for Timing Feature, Number of Swimmers in Pool
-T = 0.00
+frames_processed = 0                                    # Computer vision global variables
+first_frame = None                                      # Motion detection: first frame for still frame assumption
+T = 0.00                                                # For timing
+debounce_timer = 0                                      # Later used for less oscillation in boxing
 FPS = 30
-debounceTimer = 0
 
-# JSON file stuff
-SERIAL_NO = '0001'
+SERIAL_NO = '0001'                                      # JSON writing globals
 JSON_FILE_PATH = '../last_Image/event.json'
-SWIMMER_DETECTED = False
 NUMBER_SWIMMERS = 0
+SWIMMER_DETECTED = False
 DROWNING_DETECT = False
 
+kernel_3 = np.ones((3, 3), np.uint8)                    # Declare kernels
+kernel_5 = np.ones((5, 5), np.uint8)
+kernel_7 = np.ones((7, 7), np.uint8)
+kernel_11 = np.ones((11, 11), np.uint8)
+kernel_21 = np.ones((21, 21), np.uint8)
+kernel_40 = np.ones((40, 40), np.uint8)
+
 #######################################################
-# Section 1: While Loop for Continuous Processing of Video Stream
+# While Loop for Continuous Processing of Video Stream
 #######################################################
 while (True):
-    #######################################################
-    # Section 1.1: Color + Motion Detection - Read Image
-    #######################################################
-    # Set Starting Timer
-    starting_Time = time.time()
-    # Read image
-    retval, img = cam.read()
-    # Rescale Input Image
-    res_scale = 0.5
-    img = cv2.resize(img, (0,0), fx=res_scale, fy=res_scale)
+    starting_time = time.time()                          # Used for FPS calc
+    retval, frame = cam.read()
+    res_scale = 0.5                                      # Rescale Input Image
+    frame = cv2.resize(frame, (0, 0), fx=res_scale, fy=res_scale)
 
     #######################################################
-    # Section 1.2: Color Detection - Set up HSV Color Detection Bounds
+    # Color Detection - Set up HSV Color Detection Bounds
     #######################################################
-    # Declare hsv upper and lower bounds for color image detection
-    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)          # Declare hsv upper and lower bounds for color image detection
     lower = np.array([84, 0, 0])
     upper = np.array([111, 190, 150])
-    binary_image = cv2.inRange(hsv, lower, upper)
+    binary_image_color = cv2.inRange(hsv, lower, upper)
 
     #######################################################
-    # Section 1.3: Motion Detection - Grayscale Image Processing, Absolute Differencing for Motion Detection, Thresholding
+    # Motion Detection - Grayscale Image Processing, Absolute Differencing for Motion Detection, Thresholding
     #######################################################
-    # Convert to grayscale, apply Gaussian Blur for processing. Saves computing power because motion is independent of color
-    # Gaussian smoothing will assist in filtering out high frequency noise from water moving, camera fluctuations, etc.
-    # TUNING: Can alter gaussian blur region for better detection --> Initially 21x21
-    gray_Img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray_Img = cv2.GaussianBlur(gray_Img, (15, 15), 0)
+    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)    # Get grayscale frame
+    gray_frame = cv2.GaussianBlur(gray_frame, (15, 15), 0)  # Gaussian blur to filter out high freq noise from water moving, camera fluctuations
 
     # Initialize first frame. This will only set the first frame once. Now, can compute difference between current frame and this
-    if firstFrame is None:
-        firstFrame = gray_Img
+    if first_frame is None:
+        first_frame = gray_frame
         continue
 
     # Now comes absolute difference detection. This is "motion detection"
-    delta = cv2.absdiff(firstFrame, gray_Img)
-    thresh = cv2.threshold(delta, 10, 255, cv2.THRESH_BINARY)[1]
+    delta = cv2.absdiff(first_frame, gray_frame)
+    binary_image_motion = cv2.threshold(delta, 10, 255, cv2.THRESH_BINARY)[1]
 
     #######################################################
-    # Section 1.4: Color Tracking - Clean Up image with morphological operations
+    # Color Tracking - Clean Up image with morphological operations
     #######################################################
-    # Declare kernels of various sizes for experimentation
-    kernel_2 = np.ones((2, 2), np.uint8)
-    kernel_3 = np.ones((3, 3), np.uint8)
-    kernel_4 = np.ones((4, 4), np.uint8)
-    kernel_5 = np.ones((5, 5), np.uint8)
-    kernel_6 = np.ones((6, 6), np.uint8)
-    kernel_7 = np.ones((7, 7), np.uint8)
-    kernel_8 = np.ones((8, 8), np.uint8)
-    kernel_9 = np.ones((9, 9), np.uint8)
-    kernel_10 = np.ones((10, 10), np.uint8)
-    kernel_11 = np.ones((11, 11), np.uint8)
-    kernel_12 = np.ones((12, 12), np.uint8)
-    kernel_13 = np.ones((13, 13), np.uint8)
-    kernel_14 = np.ones((14, 14), np.uint8)
-    kernel_15 = np.ones((15, 15), np.uint8)
-    kernel_21 = np.ones((21, 21), np.uint8)
-    kernel_40 = np.ones((40, 40), np.uint8)
-    kernel_71 = np.ones((71, 71), np.uint8)
 
     # Morphological operations for cleaner image
-    # Remove artifacts of smaller pool lines, movement of water with initial erosion
-    binary_image = cv2.erode(binary_image, kernel_3)
-
-    # Fill in binary image of swimmers with closing
-    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel=kernel_21)
-    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel=kernel_21)
+    binary_image_color = cv2.erode(binary_image_color, kernel_3)                                    # Remove artifacts of smaller pool lines, movement of water with initial erosion
+    binary_image_color = cv2.morphologyEx(binary_image_color, cv2.MORPH_CLOSE, kernel=kernel_21)    # Fill in binary image of swimmers with closing
+    binary_image_color = cv2.morphologyEx(binary_image_color, cv2.MORPH_CLOSE, kernel=kernel_21)
 
     # Erosion to clear up final image
-    binary_image = cv2.erode(binary_image, kernel_5)
+    binary_image_color = cv2.erode(binary_image_color, kernel_5)
 
     # Dilation to Connect Swim Suits - This adds noise to this binary image, but this is filtered out by logical AND later
-    binary_image = cv2.dilate(binary_image, kernel_21, iterations=2)
+    binary_image_color = cv2.dilate(binary_image_color, kernel_21, iterations=2)
 
     #######################################################
     # Section 1.5: Motion Detection - Perform Morphological Operations, Find Contours, Draw Contours
     #######################################################
-    # Perform some morphological operations
-    # Remove noise from water
-    thresh = cv2.erode(thresh, kernel_7, iterations=2)
-    thresh = cv2.erode(thresh, kernel_11, iterations=1)
-
-    # Close and dilate swimmer for better boxing
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel=kernel_21)
-    thresh = cv2.dilate(thresh, kernel_21, iterations=5)
-    thresh = cv2.dilate(thresh, kernel_40, iterations=4)
+    binary_image_motion = cv2.erode(binary_image_motion, kernel_7, iterations=2)                        # Morphological operations for noise reduction
+    binary_image_motion = cv2.erode(binary_image_motion, kernel_11, iterations=1)
+    binary_image_motion = cv2.morphologyEx(binary_image_motion, cv2.MORPH_CLOSE, kernel=kernel_21)      # Close and dilate swimmer for better boxing
+    binary_image_motion = cv2.dilate(binary_image_motion, kernel_21, iterations=5)
+    binary_image_motion = cv2.dilate(binary_image_motion, kernel_40, iterations=4)
 
     #######################################################
     # Section 1.6: Perform Logical AND'ing of Binary Image, Implement Size Based Object Detection
     #######################################################
     # Perform bitwise AND of motion AND color contours
-    binary_intersection = cv2.bitwise_and(thresh, binary_image)
+    binary_intersection = cv2.bitwise_and(binary_image_motion, binary_image_color)
 
     # Find contours
     contours, hierarchy = cv2.findContours(binary_intersection,
                                            cv2.RETR_TREE,
                                            cv2.CHAIN_APPROX_SIMPLE)
 
-    # Ignore bounding boxes smaller than "minObjectSize". Tuned for optimal swimmer detection
-    minObjectSize = 80
+    minObjectSize = 80                                      # Ignore bounding boxes smaller than "minObjectSize"
 
     #######################################################
     # Section 1.7: Object Detection and Localization w/ Drowning Detection Feature Built In
@@ -182,19 +146,19 @@ while (True):
                     elif debounceTimer > 1:
                         T = 0
                         DROWNING_DETECT = False
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
-                    cv2.putText(img,                        # image
-                                "Swimmer(s)",               # text
-                                (x, y - 10),                # start position
-                                cv2.FONT_HERSHEY_SIMPLEX,   # font
-                                0.7,                        # size
-                                (0, 255, 0),                # BGR color
-                                1,                          # thickness
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
+                    cv2.putText(frame,  # image
+                                "Swimmer(s)",  # text
+                                (x, y - 10),  # start position
+                                cv2.FONT_HERSHEY_SIMPLEX,  # font
+                                0.7,  # size
+                                (0, 255, 0),  # BGR color
+                                1,  # thickness
                                 cv2.LINE_AA)                # type of line
-                    cv2.drawContours(img, contours, -1, (255, 0, 0), 3)
+                    cv2.drawContours(frame, contours, -1, (255, 0, 0), 3)
                 elif DROWNING_DETECT:
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 3)
-                    cv2.putText(img,  # image
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 0, 255), 3)
+                    cv2.putText(frame,  # image
                                 "Swimmer(s)",  # text
                                 (x, y - 10),  # start position
                                 cv2.FONT_HERSHEY_SIMPLEX,  # font
@@ -202,34 +166,27 @@ while (True):
                                 (0, 0, 255),  # BGR color
                                 1,  # thickness
                                 cv2.LINE_AA)  # type of line
-                    cv2.drawContours(img, contours, -1, (255, 0, 0), 3)
+                    cv2.drawContours(frame, contours, -1, (255, 0, 0), 3)
 
                 # Measure FPS that Script Runs At:
-                measured_FPS = (1 / (time.time() - starting_Time))
+                measured_FPS = (1 / (time.time() - starting_time))
 
                 # Text on Screen for Primitive Lifeguard UI
                 line1_Text = "Time Underwater: {} second(s)".format(scaled_T)  # Format Text for Screen Putting
                 line2_Text = "Drowning Risk: ({})".format(DROWNING_DETECT)
                 line3_Text = "FPS: ({})".format(measured_FPS)
-                cv2.putText(img, line1_Text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                cv2.putText(img, line2_Text, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                cv2.putText(img, line3_Text, (20, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                cv2.putText(frame, line1_Text, (20, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                cv2.putText(frame, line2_Text, (20, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                cv2.putText(frame, line3_Text, (20, 100), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
 
     #######################################################
     # Section 1.8: Write 10th Frame to .jpg, Frame Counter
     #######################################################
-    if frames_Processed%10 == 0:
-        cv2.imwrite('../last_Image/last_Frame.jpg', img)
-        logging.info('Wrote the ' + str(frames_Processed) + 'th frame')
-        # Tie swimmer detected to the number of swimmers in the pool
+    if frames_processed % 10 == 0:
+        cv2.imwrite('../last_Image/last_Frame.jpg', frame)
+        logging.info('Wrote the ' + str(frames_processed) + 'th frame')
         SWIMMER_DETECTED = bool(NUMBER_SWIMMERS)
         write_pool_info_json(SWIMMER_DETECTED, NUMBER_SWIMMERS, DROWNING_DETECT, SERIAL_NO, JSON_FILE_PATH)
 
-    action = cv2.waitKey(1)
-    if action==27:
-        break
+    frames_processed += 1  # Iterate on frames processed
 
-    # Global Counter of Frames Processed
-    frames_Processed = frames_Processed + 1
-
-cv2.destroyAllWindows()

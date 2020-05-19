@@ -27,7 +27,7 @@ N = 0                                                   #Frame Counter
 J = 0                                                   #Image Number
 movieName = argList[1]                                  #Movie name
 strippedMovieName = movieName[:-4]                      #Movie name without filetype for writing .jpgs
-pathToDataSet = '/Volumes/Seagate HDD - Alden Kane/POOLS/fallPOOLS/GoPro Hero'
+pathToDataSet = '/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Teslong USB Endoscope'
 pathToMovie = str(pathToDataSet) + '/' + str(movieName) #Path to the Movie rn
 jpgFolder = str(pathToDataSet) + '/' + '../../mftJPGS'  #Folder to write .jpgs to
 

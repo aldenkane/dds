@@ -1,5 +1,5 @@
 # start_rpi_uw_swimmer_detection.py
-# A python
+# RPI Startup Script for OptoSwim
 #   Author: Alden Kane
 
 import cv2

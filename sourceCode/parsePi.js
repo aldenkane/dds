@@ -33,8 +33,10 @@ function send(swimDetected, numberSwimmers, drownDetected, serialNo) {
     }
   );
 }
-
-fs.watch('../last_Image/event.json', (event, filename) => {
+// const options = {
+//   persistent: true,
+// }
+fs.watchFile('../last_Image/event.json', (change, filename) => {
   if (filename) {
     let jsObj = JSON.parse(fs.readFileSync('../last_Image/event.json'));
     send(

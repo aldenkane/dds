@@ -20,6 +20,7 @@ def do_canny(frame):
 def segment_for_bottom(frame):
     # Take in a frame with canny edge detection applied, then apply mask to find horizontal lines at bottom of the pool
     # Take in a grayscale image
+    kernel_9 = np.ones((9, 9), np.uint8)
     height, width = frame.shape
     # Find all straight lines bottom 1/2 of Image
     bottom_rectangle = np.array([
@@ -29,7 +30,33 @@ def segment_for_bottom(frame):
     # Fill polygon with 1s (white)
     mask = cv2.fillPoly(mask, np.int32([bottom_rectangle]), 255)
     frame = cv2.bitwise_and(frame, mask)
-    # Return frame that now only has bottom area segmented for lines
+    return frame
+
+
+def generate_bottom_mask(frame):
+    """
+    :param frame: Takes in color image of pool
+    :return frame: Returns a mask of the bottom of the pool
+    Builds off of do_canny and segment_for_bottom
+    """
+    gray = cv2.cvtColor(frame, cv2.COLOR_RGB2GRAY)  # Grayscale to save computational expense
+    blur = cv2.GaussianBlur(gray, (5, 5), 0)        # 5x5 Gaussian Blur
+    frame = cv2.Canny(blur, 50, 150)                # Canny Edge Detector
+    height, width = frame.shape
+    bottom_rectangle = np.array([
+        [(0, height), (width, height), (width, height/2), (0, height/2)]
+                                ])                  # Find all straight lines bottom 1/2 of Image
+    mask = np.zeros_like(frame)
+    # Fill polygon with 1s (white)
+    mask = cv2.fillPoly(mask, np.int32([bottom_rectangle]), 255)
+    frame = cv2.bitwise_and(frame, mask)
+    contours, _ = cv2.findContours(frame, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+    hull = []
+    for i in range(len(contours)):
+        hull.append(cv2.convexHull(contours[i], False))
+    for i in range(len(hull)):
+        cv2.fillPoly(frame, pts=[hull[i]], color=255)
+
     return frame
 
 

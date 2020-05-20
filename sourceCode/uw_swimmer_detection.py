@@ -62,12 +62,12 @@ from decimal import *
 ########################################
 # Teslong USB Videos
 ########################################
-cam = cv2.VideoCapture('/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Teslong USB Endoscope/tePools3.mov')
+# cam = cv2.VideoCapture('/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Teslong USB Endoscope/tePools3.mov')
 
 ########################################
 # # Webcam Capture
 # ########################################
-# cam = cv2.VideoCapture(0)
+cam = cv2.VideoCapture(0)
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None

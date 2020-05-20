@@ -34,7 +34,7 @@ from decimal import *
 
 # Two Swimmers, Begin Apart, Come Together, Then Separate, Very Good Response
 # STANDARD DEBUG BUTTON
-cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
+# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 
 # Two Swimmers, Begin Apart, Come Together, Then Separate, Poor Response for Multiple Swimmers, Good Response for Solo
 # cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-5-of-29.mp4')
@@ -60,14 +60,14 @@ cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 # cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-4-of-10-30fps.mp4')
 
 ########################################
-# # Webcam Capture
-# ########################################
-# # cam = cv2.VideoCapture(0)
-
-########################################
 # Teslong USB Videos
 ########################################
 cam = cv2.VideoCapture('/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Teslong USB Endoscope/tePools3.mov')
+
+########################################
+# # Webcam Capture
+# ########################################
+# cam = cv2.VideoCapture(0)
 
 # Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
 firstFrame = None
@@ -180,8 +180,10 @@ while True:
     #######################################################
     # Declare hsv upper and lower bounds for color image detection
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    lower = np.array([84, 0, 0])
-    upper = np.array([111, 190, 150])
+    # lower = np.array([84, 0, 0]) OLD
+    # upper = np.array([111, 190, 150]) OLD
+    lower = np.array([84, 190, 100])
+    upper = np.array([111, 255, 255])
     binary_image = cv2.inRange(hsv, lower, upper)
 
     #######################################################

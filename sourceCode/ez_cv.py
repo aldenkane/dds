@@ -32,6 +32,21 @@ def segment_for_bottom(frame):
     frame = cv2.bitwise_and(frame, mask)
     return frame
 
+def bottom_rect(frame):
+    # Take in a frame with canny edge detection applied, then apply mask to find horizontal lines at bottom of the pool
+    # Take in a grayscale image
+    kernel_9 = np.ones((9, 9), np.uint8)
+    height, width = frame.shape
+    # Find all straight lines bottom 1/2 of Image
+    bottom_rectangle = np.array([
+        [(0, height), (width, height), (width, height/2), (0, height/2)]
+                                ])
+    mask = np.zeros_like(frame)
+    # Fill polygon with 1s (white)
+    mask = cv2.fillPoly(mask, np.int32([bottom_rectangle]), 255)
+    frame = cv2.bitwise_and(frame, mask)
+    return frame
+
 
 def generate_bottom_mask(frame):
     """

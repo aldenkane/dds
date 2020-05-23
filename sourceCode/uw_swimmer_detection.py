@@ -173,7 +173,7 @@ while True:
 
     # Rescale Input Image
     res_scale = 0.5
-    img = cv2.resize(img, (0,0), fx = res_scale, fy = res_scale)
+    #img = cv2.resize(img, (0,0), fx = res_scale, fy = res_scale) --> Eliminated resize w/ teslong UW
 
     #######################################################
     # Section 2: Color Detection - Set up HSV Color Detection Bounds
@@ -193,7 +193,7 @@ while True:
     # Gaussian smoothing will assist in filtering out high frequency noise from water moving, camera fluctuations, etc.
     # TUNING: Can alter gaussian blur region for better detection --> Initially 21x21
     gray_Img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray_Img = cv2.GaussianBlur(gray_Img, (15, 15), 0)
+    gray_Img = cv2.GaussianBlur(gray_Img, (31, 31), 0)
 
     # Initialize first frame. This will only set the first frame once. Now, can compute difference between current frame and this.
     if firstFrame is None:
@@ -202,7 +202,7 @@ while True:
 
     # Now comes absolute difference detection. This is "motion detection"
     delta = cv2.absdiff(firstFrame, gray_Img)
-    thresh = cv2.threshold(delta, 10, 255, cv2.THRESH_BINARY)[1]
+    thresh = cv2.threshold(delta, 100, 255, cv2.THRESH_BINARY)[1] #Used to be 10 --> Hyped this up for better motion detection
 
     #######################################################
     # Section 4: Color Tracking - Show Binary Feed
@@ -254,13 +254,13 @@ while True:
     #######################################################
     # Perform some morphological operations
     # Remove noise from water
-    thresh = cv2.erode(thresh, kernel_7, iterations=2)
-    thresh = cv2.erode(thresh, kernel_11, iterations=1)
+    thresh = cv2.erode(thresh, kernel_3, iterations=2)
+    thresh = cv2.erode(thresh, kernel_7, iterations=1)
 
     # Close and dilate swimmer for better boxing
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel=kernel_21)
-    thresh = cv2.dilate(thresh, kernel_21, iterations=5)
-    thresh = cv2.dilate(thresh, kernel_40, iterations=4)
+    thresh = cv2.dilate(thresh, kernel_11, iterations=5)
+    thresh = cv2.dilate(thresh, kernel_13, iterations=4)
 
     #######################################################
     # Section 7: Perform Logical AND'ing of Binary Image, Implement Size Based Object Detection
@@ -293,7 +293,7 @@ while True:
     bottom_seg = segment_for_bottom(canny_img)
     #seg_with_lines = find_bottom_line(bottom_seg)
     seg_with_lines = generate_bottom_mask(img)
-    cv2.imshow("Edge Detection", seg_with_lines)
+    cv2.imshow("Edge Detection", canny_img)
 
     #######################################################
     # Section 9: Object Detection and Localization w/ Drowning Detection Feature Built In
@@ -302,10 +302,8 @@ while True:
     if contours:
         # Detect all swimmers, i.e. all objects with contours
         for contours in contours:
-
             # use just the first contour to draw a rectangle
             x, y, w, h = cv2.boundingRect(contours)
-
             # If statement to filter out small objects
             if w > minObjectSize or h > minObjectSize:
                 T = T + 1                                   # Iterate on My Time
@@ -315,7 +313,7 @@ while True:
                     drowningRisk = 1
                     drowningBox = (0,0,255)
 
-                # Put up boudning boxes w/ Text, If Statement for Timing
+                # Put up bounding boxes w/ Text, If Statement for Timing
                 if not drowningRisk:
                     debounceTimer = (debounceTimer + 1) / FPS
                     if debounceTimer < 0.1:

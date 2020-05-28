@@ -1,8 +1,6 @@
-# Underwater Swimmer Detection, Term Project
-# Computer Vision Course (CSE 40535/60535)
-# University of Notre Dame, Fall 2019
-# Combination of detect_UW.py (Color Based Detection) and motionDetect_UW.py (Motion Based Swimmer Detection)
-# Improvements made for OptoSwim
+# uw.py
+# OptoSwim Embedded Module for Use in Pools
+# Run off of Laptop w/ Screen
 #   Author: Alden Kane
 
 import cv2
@@ -10,67 +8,22 @@ import numpy as np
 import math
 import time
 from ez_cv import do_canny, segment_for_bottom, find_bottom_line, generate_bottom_mask
-from random import random
-import datetime
-from decimal import *
-
-#######################################################
-# Section 0: References
-#######################################################
-# Color-based detection code adapted from "colorTracking.py" script by Dr. Adam Czajka, Andrey Kuelkahmp for University of Notre Dame's Fall 2019 CSE 40535/60535 course
-# Motion-based detection code referenced Adrian Rosebrock's "Basic motion detect and tracking with Python and OpenCV" tutorial at https://www.pyimagesearch.com/2015/05/25/basic-motion-detection-and-tracking-with-python-and-opencv/
-# Uses PJReddie's Darknet and YOLO Codes
-
-#######################################################
-# Pre-Processing: Declare Many Video Captures (Uncomment Video to See), Global Variables
-#######################################################
-# Declare some underwater video captures for analysis
-
-# Solo Swimmer, Good Response
-# cam = cv2.VideoCapture('../dataSet/swim2/swim2.1-3-of-5.mp4')
-
-# Two Swimmers, Begin Apart, Come Together at End, Fairly Good Response, Get Some Oscillation in Boxing
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-7-of-14.mp4')
-
-# Two Swimmers, Begin Apart, Come Together, Then Separate, Very Good Response
-# STANDARD DEBUG BUTTON
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
-
-# Two Swimmers, Begin Apart, Come Together, Then Separate, Poor Response for Multiple Swimmers, Good Response for Solo
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-5-of-29.mp4')
-
-# Solo Swimmer, Poor Response from Motion Detection in Middle
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-12-of-29.mp4')
-
-# Solo Swimmer, Poor Response from Motion Detection in Middle
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.2-13-of-29.mp4')
-
-# Two Solo Swimmers at Separate Times, Poor Response from 1st Swimmer, Good Response from Second Swimmer
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.3-2-of-3.mp4')
-
-# Two Swimmers, Alright Response, As Male swimmer moves out of foreground, detection is lost
-# cam = cv2.VideoCapture('../dataSet/swim3/swim3.4-3-of-14.mp4')
 
 ########################################
-# Accuracy Videos at Rock
-########################################
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.3-5-of-9-30fps.mp4')
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.4-2-of-4-30fps.mp4')
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-7-of-10-30fps.mp4')
-# cam = cv2.VideoCapture('../dataSet/swim4/swim4.5-4-of-10-30fps.mp4')
+# Section 1: Initialize Globals, Video Parameters, Windows
+##########################################
+cam = cv2.VideoCapture(0)   # Webcam Capture
+first_frame = None          # Motion Detection First Frame
+debounce_timer = 0          # Less Oscillation in Boxing
+avg = None                  # Motion Detection Averaging Frame
+frames_processed = 0        # Iterate on Frames Processed
 
-########################################
-# Teslong USB Videos
-########################################
-# cam = cv2.VideoCapture('/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Teslong USB Endoscope/tePools3.mov')
+# Global Variables for Timing Feature, Number of Swimmers in Pool
+T = 0.00
+drowningRisk = 0
+FPS = 30
+numSwimmers = 0
 
-########################################
-# # Webcam Capture
-# ########################################
-cam = cv2.VideoCapture(0)
-
-# Motion Detection: Initialize first frame - this is the basis of the still camera assumption for motion detection
-firstFrame = None
 
 # Initialize Windows
 cv2.namedWindow("Color Detection: Binary image", cv2.WINDOW_NORMAL)
@@ -104,28 +57,15 @@ cv2.namedWindow("Edge Detection", cv2.WINDOW_NORMAL)
 cv2.resizeWindow("Edge Detection", 400, 225)
 
 #######################################################
-# Global Variables for Accuracy, Underwater Timing Features
-#######################################################
-# Counter for number of desired samples -- Global Used for accuracy calc.
-N = 0
-
-# Global Variables for Timing Feature, Number of Swimmers in Pool
-T = 0.00
-drowningRisk = 0
-FPS = 30
-numSwimmers = 0
-debounceTimer = 0
-
-#######################################################
 # YOLO Initialization
 #######################################################
 
 # Load YOLOv3 Retrained Model
 net = cv2.dnn.readNet("../yolo/yolov3_custom_train_final.weights", "../yolo/yolov3_custom_train.cfg")
 
-# YOLO Processing Information
-res_scale = 0.5
-frames_processed = 0
+
+res_scale = 0.5         # YOLO Processing Information
+
 sample_rate = 30
 
 classes = []
@@ -149,7 +89,7 @@ while True:
     #######################################################
     # Pre-Processing - Initialize Window Position & Set Timers
     #######################################################
-    starting_Time = time.time()
+    starting_time = time.time()
 
     cv2.moveWindow("Color Detection: Binary image", 840, 0)
     cv2.moveWindow("Color Detection: Image after Morphological Operations", 0, 300)
@@ -171,17 +111,11 @@ while True:
     # Image for putting video parameters for debug
     display_img = np.zeros((512,512,3), np.uint8)
 
-    # Rescale Input Image
-    res_scale = 0.5
-    #img = cv2.resize(img, (0,0), fx = res_scale, fy = res_scale) --> Eliminated resize w/ teslong UW
-
     #######################################################
     # Section 2: Color Detection - Set up HSV Color Detection Bounds
     #######################################################
     # Declare hsv upper and lower bounds for color image detection
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-    # lower = np.array([84, 0, 0]) OLD
-    # upper = np.array([111, 190, 150]) OLD
     lower = np.array([84, 0, 0])
     upper = np.array([111, 255, 255])
     binary_image = cv2.inRange(hsv, lower, upper)
@@ -192,17 +126,25 @@ while True:
     # Convert to grayscale, apply Gaussian Blur for processing. Saves computing power because motion is independent of color
     # Gaussian smoothing will assist in filtering out high frequency noise from water moving, camera fluctuations, etc.
     # TUNING: Can alter gaussian blur region for better detection --> Initially 21x21
-    gray_Img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    gray_Img = cv2.GaussianBlur(gray_Img, (31, 31), 0)
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.GaussianBlur(gray, (15, 15), 0)
+
+    if avg is None:
+        avg = gray.copy().astype("float")
+        continue
 
     # Initialize first frame. This will only set the first frame once. Now, can compute difference between current frame and this.
-    if firstFrame is None:
-        firstFrame = gray_Img
+    if first_frame is None:
+        first_frame = gray
         continue
 
     # Now comes absolute difference detection. This is "motion detection"
-    delta = cv2.absdiff(firstFrame, gray_Img)
+    delta = cv2.absdiff(first_frame, gray)
     thresh = cv2.threshold(delta, 100, 255, cv2.THRESH_BINARY)[1] #Used to be 10 --> Hyped this up for better motion detection
+
+    # Averaging Motion Detection
+    cv2.accumulateWeighted(gray, avg, 0.5)
+    frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
 
     #######################################################
     # Section 4: Color Tracking - Show Binary Feed
@@ -284,7 +226,7 @@ while True:
     #######################################################
     cv2.imshow("Motion Detection: Binary Image after Morphological Operations", thresh)
     cv2.imshow("Motion Detection: Absolute Difference", delta)
-    cv2.imshow("Motion Detection: First Frame", firstFrame)
+    cv2.imshow("Motion Detection: First Frame", first_frame)
 
     #######################################################
     # Section : Canny Edge Detection w/ Imshow
@@ -315,11 +257,11 @@ while True:
 
                 # Put up bounding boxes w/ Text, If Statement for Timing
                 if not drowningRisk:
-                    debounceTimer = (debounceTimer + 1) / FPS
-                    if debounceTimer < 0.1:
+                    debounce_timer = (debounce_timer + 1) / FPS
+                    if debounce_timer < 0.1:
                         T = T + 1
                         scaled_T = math.ceil(T / FPS)
-                    elif debounceTimer > 1:
+                    elif debounce_timer > 1:
                         T = 0
                         drowningRisk = 0
                     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 3)
@@ -348,7 +290,7 @@ while True:
                 # numSwimmers = len(contours)
 
                 # Measure FPS that Script Runs At:
-                measured_FPS = (1 / (time.time() - starting_Time))
+                measured_FPS = (1 / (time.time() - starting_time))
 
                 # Text on Screen for Primitive Lifeguard UI
                 line1_Text = "Time Underwater: {} second(s)".format(scaled_T)  # Format Text for Screen Putting
@@ -433,6 +375,6 @@ while True:
     if action==27:
         break
 
-    frames_processed = frames_processed + 1
+    frames_processed += 1
 
 cv2.destroyAllWindows()

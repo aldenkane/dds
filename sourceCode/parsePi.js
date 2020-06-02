@@ -63,24 +63,24 @@ function sendEvent(swimDetected, numberSwimmers, drownDetected, serialNo) {
 }
 
 // constantly watches and creates Events and Image object when detected
-fs.watch('../last_Image/event.json', (event, filename) => {
-	let prevEvent, currEvent
-	if (filename) {
-		let jsObj = require('../last_Image/event.json')
-		if (
-			jsObj.swimDetected === true ||
-			(jsObj.drownDetected === true && prevEvent !== jsObj)
-		) {
-			sendEvent(
-				jsObj.swimDetected,
-				parseInt(jsObj.numberSwimmers),
-				jsObj.drownDetected,
-				jsObj.serialNo
-			)
-			prevEvent = jsObj
-		}
-	}
-})
+// fs.watch('../last_Image/event.json', (event, filename) => {
+// 	let prevEvent, currEvent
+// 	if (filename) {
+// 		let jsObj = require('../last_Image/event.json')
+// 		// if (
+// 		// 	jsObj.swimDetected === true ||
+// 		// 	(jsObj.drownDetected === true && prevEvent !== jsObj)
+// 		// ) {
+// 			sendEvent(
+// 				jsObj.swimDetected,
+// 				parseInt(jsObj.numberSwimmers),
+// 				jsObj.drownDetected,
+// 				jsObj.serialNo
+// 			)
+// 			prevEvent = jsObj
+// 		}
+// 	}
+// })
 
 // Starts watching and creating Images objects when a LiveFeed object is created
 const liveQuery = async () => {

@@ -182,7 +182,7 @@ while True:
     hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     # lower = np.array([84, 0, 0]) OLD
     # upper = np.array([111, 190, 150]) OLD
-    lower = np.array([84, 190, 100])
+    lower = np.array([84, 0, 0])
     upper = np.array([111, 255, 255])
     binary_image = cv2.inRange(hsv, lower, upper)
 

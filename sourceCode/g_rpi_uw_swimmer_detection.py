@@ -154,8 +154,6 @@ while (True):
     #######################################################
     # Section 4: Color Tracking - Show Binary Feed
     #######################################################
-    # Debug: Show binary image video feed
-    cv2.imshow("Color Detection: Binary image", binary_image)
 
     #######################################################
     # Section 5: Color Tracking - Clean Up image with morphological operations

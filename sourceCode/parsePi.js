@@ -89,7 +89,7 @@ const liveQuery = async () => {
 	// 	'03Pq0kbLRvci8D3OV92OFIIbNidw3kZrGma2sruS', // Application ID
 	// 	'SMnIF1sMs1zdczYwWU1SikdLtfIu4IzcWYhBhEMf', // Javascript key
 	// 	'HSNUMKsUeTtNjTxOIPB2ct3FIiD6NMJp7yc5w9WW' // Master key (never use it in the frontend)
-	// )
+	// // )
 	// var client = await new Parse.LiveQueryClient({
 	// 	applicationId: '03Pq0kbLRvci8D3OV92OFIIbNidw3kZrGma2sruS',
 	// 	serverURL: 'wss://' + 'optoswim.back4app.io', // Example: 'wss://livequerytutorial.back4app.io'
@@ -98,25 +98,25 @@ const liveQuery = async () => {
 	// })
 	// await client.open()
 
-	// Creates a new Query object to help us fetch MyCustomClass objects
-	const query = new Parse.Query('LiveFeed')
-	query.equalTo('liveFeed', true)
+	// // Creates a new Query object to help us fetch MyCustomClass objects
+	// const query = new Parse.Query('LiveFeed')
+	// query.equalTo('liveFeed', true)
 
-	var subscription = await client.subscribe(query)
+	// var subscription = await client.subscribe(query)
 
-	subscription.on('create', async () => {
-		fs.watch('../last_Image/event.json', (event, filename) => {
-			if (filename) {
-				let jsObj = require('../last_Image/event.json')
-				sendImage(
-					jsObj.swimDetected,
-					parseInt(jsObj.numberSwimmers),
-					jsObj.drownDetected,
-					jsObj.serialNo
-				)
-			}
-		})
+	// subscription.on('create', async () => {
+	fs.watch('../last_Image/event.json', (event, filename) => {
+		if (filename) {
+			let jsObj = require('../last_Image/event.json')
+			sendImage(
+				jsObj.swimDetected,
+				parseInt(jsObj.numberSwimmers),
+				jsObj.drownDetected,
+				jsObj.serialNo
+			)
+		}
 	})
+	// })
 }
 
 liveQuery()

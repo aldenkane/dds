@@ -6,7 +6,7 @@
 import cv2
 import matplotlib.pyplot as plt
 
-cam = cv2.VideoCapture('/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Teslong USB Endoscope/tePools3.mov')
+cam = cv2.VideoCapture(0)
 
 def print_menu():
     print("Options menu:")

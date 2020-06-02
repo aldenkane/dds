@@ -109,9 +109,16 @@ def write_pool_info_json(swimDetected, numberSwimmers, drownDetected, serialNo, 
 
 def check_water_quality(frame):
     """
-    :param frame: BGR Image that is then checked for std_dev
+    :param frame: BGR Image that is then checked for variance of Laplacian
     :return: water_clarity, a boolean indicator of water clarity/the camera's ability to 'see'
+
+    Function takes the variance of LaPlacian as a heuristic for water quality. Tune to a hyperparameter threshold
     """
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    var = cv2.Laplacian(gray, cv2.CV_64F).var()
+    return var
+
+
 
 # def motion_detection(frame, firstFrame):
 #     #Takes in color frame, converts to grayscale, applies motion detection

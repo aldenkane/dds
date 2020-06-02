@@ -1,12 +1,13 @@
 {
 	"show_video": true,
-	"use_dropbox": false,
-	"dropbox_access_token": "YOUR_DROPBOX_KEY",
-	"dropbox_base_path": "YOUR_DROPBOX_PATH",
-	"min_upload_seconds": 3.0,
+	"raspberry_pi": false,
+	"serial_no": "0001",
+	"avg_delta_thresh": 70,
+	"avg_alpha": 0.1,
+	"gaussian_blur_size": 21,
+	"first_frame_threshold": 50,
 	"min_motion_frames": 8,
 	"camera_warmup_time": 2.5,
-	"delta_thresh": 20,
 	"resolution": [640, 480],
 	"fps": 16,
 	"min_area": 5000

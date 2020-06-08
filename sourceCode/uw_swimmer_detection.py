@@ -9,6 +9,7 @@ import cv2
 import numpy as np
 import math
 import time
+import logging
 from ez_cv import do_canny, segment_for_bottom, find_bottom_line, generate_bottom_mask
 from random import random
 import datetime

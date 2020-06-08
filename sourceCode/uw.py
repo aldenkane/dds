@@ -8,16 +8,17 @@ import numpy as np
 import math
 import time
 import json
+import logging
 from ez_cv import do_canny, segment_for_bottom, find_bottom_line, generate_bottom_mask, write_pool_info_json, check_water_quality
 
 ########################################
 # Section 1: Initialize Globals, Video Parameters, Windows, Load JSON File
 ##########################################
+
 conf = json.load(open('./conf.json'))               # Open .json Config File
-cam = cv2.VideoCapture(0)                           # Webcam Capture
 first_frame = None                                  # Motion Detection First Frame
 avg = None                                          # Motion Detection Averaging Frame
-bsmog = cv2.bgsegm.createBackgroundSubtractorMOG()  # Background Subtractor
+bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
 debounce_timer = 0                                  # Less Oscillation in Boxing
 frames_processed = 0                                # Iterate on Frames Processed
 starting_time = time.time()                         # For Measuring FPS
@@ -26,11 +27,21 @@ timer = 0.00                                        # For Debouncing Boxes
 drowningRisk = 0
 FPS = 30
 
-JSON_FILE_PATH = '../last_Image/event.json'     # VARIABLES THAT ARE WRITTEN TO JSON FILE
+JSON_FILE_PATH = '../last_Image/event.json'         # VARIABLES THAT ARE WRITTEN TO JSON FILE
 NUMBER_SWIMMERS = 0
 SWIMMER_DETECTED = False
 DROWNING_DETECT = False
 SERIAL_NO = conf["serial_no"]
+
+if conf["raspberry_pi"]:                            # Initiate logging for Raspberry Pi
+    time.sleep(10)                                  # Camera Warmup
+    time_tuple = time.localtime()                   # Logging Time
+    log_Filename = '../logs/' + str(time_tuple[1]) + '.' + str(time_tuple[2]) + '.' + str(time_tuple[0]) + '_' + str(
+        time_tuple[3]) + '.' + str(time_tuple[4]) + '.' + str(time_tuple[5]) + '_eye_V0.1.log'
+    logging.basicConfig(filename=str(log_Filename), level=logging.DEBUG)
+    logging.debug('Accessed Log File')
+
+cam = cv2.VideoCapture(0)                           # Webcam Capture
 
 #######################################################
 # YOLO Initialization
@@ -120,15 +131,12 @@ while True:
     kernel_71 = np.ones((71, 71), np.uint8)
 
     #######################################################
-    # Read Image
+    # Read Image, Ch
     #######################################################
     retval, frame = cam.read()                              # Image for main channel
     img_yolo = frame.copy()                                 # Image for yolo stream
 
-    #######################################################
-    # Check Water Quality
-    #######################################################
-    var_of_laplacian = check_water_quality(frame)
+    var_of_laplacian = check_water_quality(frame)           # Check image sharpness using variance of Laplacian
 
     #######################################################
     # Section 2: Color Detection - Set up HSV Color Detection Bounds
@@ -176,22 +184,21 @@ while True:
 
     # BSMOG Motion Detection w/ Morphological Operations
     bs_mask = bsmog.apply(frame)
-    bs_mask = cv2.erode(bs_mask, kernel_7)
-    bs_mask = cv2.morphologyEx(bs_mask, cv2.MORPH_OPEN, kernel_3)
-    bs_mask = cv2.dilate(bs_mask, kernel_13)
+    bs_mask = cv2.erode(bs_mask, kernel_3, iterations=3)
+    bs_mask = cv2.dilate(bs_mask, kernel_9, iterations=3)
 
     # First Frame Motion Detection Morphological Operations
     thresh = cv2.erode(thresh, kernel_3, iterations=2)
-    thresh = cv2.erode(thresh, kernel_7, iterations=1)
-    thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel=kernel_21)
-    thresh = cv2.dilate(thresh, kernel_11, iterations=5)
-    thresh = cv2.dilate(thresh, kernel_13, iterations=4)
+    # thresh = cv2.erode(thresh, kernel_7, iterations=1)
+    # thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel=kernel_21)
+    # thresh = cv2.dilate(thresh, kernel_11, iterations=5)
+    # thresh = cv2.dilate(thresh, kernel_13, iterations=4)
 
     #######################################################
     # Section 7: Perform Logical AND'ing of Binary Image, Implement Size Based Object Detection
     #######################################################
     # Perform bitwise AND of motion AND color contours. Change 'thresh' to preferred color motion detection
-    binary_intersection = cv2.bitwise_and(thresh, binary_image)
+    binary_intersection = cv2.bitwise_and(bs_mask, binary_image)
 
     # Find contours
     contours, hierarchy = cv2.findContours(binary_intersection,
@@ -204,14 +211,15 @@ while True:
     #######################################################
     # Section 9: Object Detection and Localization w/ Drowning Detection Feature Built In
     #######################################################
-    # If statement to detect if contours are present
+    swimmers = []                                                 # Make list of boxes
     if contours:
         # Detect all swimmers, i.e. all objects with contours
         for contours in contours:
             # use just the first contour to draw a rectangle
             x, y, w, h = cv2.boundingRect(contours)
-            # If statement to filter out small objects
-            if w > min_object_size or h > min_object_size:
+            if w > min_object_size or h > min_object_size:        # If statement to filter out small objects
+                swimmers.append('s')                              # Mask for Number of Swimmers
+                NUMBER_SWIMMERS = len(swimmers)                   # Gives number of swimmers in pool
                 SWIMMER_DETECTED = True                           # This designates a swimmer detection
                 timer += 1                                        # Iterate on My Time
                 scaled_T = math.ceil(timer / FPS)                 # Scaled Time that Accounts for FPS
@@ -220,7 +228,7 @@ while True:
                 if not drowningRisk:
                     debounce_timer = (debounce_timer + 1) / FPS
                     if debounce_timer < 0.1:
-                        timer = timer + 1
+                        timer += 1
                         scaled_T = math.ceil(timer / FPS)
                     elif debounce_timer > 1:
                         timer = 0

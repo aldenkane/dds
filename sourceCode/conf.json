@@ -2,10 +2,10 @@
 	"show_video": true,
 	"raspberry_pi": false,
 	"serial_no": "0001",
+	"camera_warmup_time": 10,
 	"avg_delta_thresh": 70,
 	"avg_alpha": 0.1,
 	"gaussian_blur_size": 11,
 	"first_frame_threshold": 20,
 	"min_motion_frames": 8,
-	"camera_warmup_time": 2.5
 }

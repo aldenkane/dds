@@ -34,7 +34,7 @@ DROWNING_DETECT = False
 SERIAL_NO = conf["serial_no"]
 
 if conf["raspberry_pi"]:                            # Initiate logging for Raspberry Pi
-    time.sleep(10)                                  # Camera Warmup
+    time.sleep(int(conf["camera_warmup_time"]))     # Camera Warmup
     time_tuple = time.localtime()                   # Logging Time
     log_Filename = '../logs/' + str(time_tuple[1]) + '.' + str(time_tuple[2]) + '.' + str(time_tuple[0]) + '_' + str(
         time_tuple[3]) + '.' + str(time_tuple[4]) + '.' + str(time_tuple[5]) + '_eye_V0.1.log'
@@ -298,6 +298,7 @@ while True:
                                     colors[class_ids[i]],                                                   # BGR color
                                     1,                                                                      # thickness
                                     cv2.LINE_AA)                                                            # type of line
+                SWIMMER_DETECTED = True                                                                     # Set True for YOLOv3
 
     #######################################################
     # Show Images

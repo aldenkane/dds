@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd /home/pi/dds/sourceCode
-/usr/bin/python3 start_rpi_uw_swimmer_detection.py
+/usr/bin/python3 uw.py

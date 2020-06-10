@@ -7,5 +7,5 @@
 	"avg_alpha": 0.1,
 	"gaussian_blur_size": 11,
 	"first_frame_threshold": 20,
-	"min_motion_frames": 8,
+	"min_motion_frames": 8
 }

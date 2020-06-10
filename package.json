@@ -1,0 +1,23 @@
+{
+  "name": "dds",
+  "version": "1.0.0",
+  "description": "CSE 40535 Term Project by Alden Kane. Uses color and motion detection features from underwater video feed for frame-by-frame swimmer localization and detection.",
+  "main": "sourceCode/parsePi.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aldenkane/dds.git"
+  },
+  "author": "James Murdock Graham & Alden Kane",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/aldenkane/dds/issues"
+  },
+  "homepage": "https://github.com/aldenkane/dds#readme",
+  "dependencies": {
+    "btoa": "^1.2.1",
+    "parse": "^2.13.0"
+  }
+}

@@ -4,3 +4,4 @@ darknet/yolov3.weights
 yolo/yolov3_custom_train_final.weights
 last_Image/event.json
 last_Image/last_Frame.jpg
+./node_modules

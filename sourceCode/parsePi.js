@@ -3,11 +3,11 @@ const btoa = require('btoa')
 const fs = require('fs')
 
 //Initializes Parse Object
-Parse.serverURL = 'https://optoswim.back4app.io' // Server URL
+Parse.serverURL = 'https://optoswimeye.back4app.io' // Server URL
 Parse.initialize(
-	'03Pq0kbLRvci8D3OV92OFIIbNidw3kZrGma2sruS', // Application ID
-	'SMnIF1sMs1zdczYwWU1SikdLtfIu4IzcWYhBhEMf', // Javascript key
-	'HSNUMKsUeTtNjTxOIPB2ct3FIiD6NMJp7yc5w9WW' // Master key (never use it in the frontend)
+	'fqPHmhq9BPryvJRMRSyMRx974hOrK1KKdyKlUokV', // Application ID
+	'9WV8pcSdsMg529URvKzTatId7iq4lwFRIItopkQI', // Javascript key
+	'1ADOjf5x6kwRx1iXpI1ON5vC2lIIp60Yv9Dn5dSu' // Master key (never use it in the frontend)
 )
 
 // Creates an Image object in Parse DB
@@ -63,60 +63,57 @@ function sendEvent(swimDetected, numberSwimmers, drownDetected, serialNo) {
 }
 
 // constantly watches and creates Events and Image object when detected
-// fs.watch('../last_Image/event.json', (event, filename) => {
-// 	let prevEvent, currEvent
-// 	if (filename) {
-// 		let jsObj = require('../last_Image/event.json')
-// 		// if (
-// 		// 	jsObj.swimDetected === true ||
-// 		// 	(jsObj.drownDetected === true && prevEvent !== jsObj)
-// 		// ) {
-// 			sendEvent(
-// 				jsObj.swimDetected,
-// 				parseInt(jsObj.numberSwimmers),
-// 				jsObj.drownDetected,
-// 				jsObj.serialNo
-// 			)
-// 			prevEvent = jsObj
-// 		}
-// 	}
-// })
-
-// Starts watching and creating Images objects when a LiveFeed object is created
-const liveQuery = async () => {
-	// Parse.serverURL = 'https://optoswim.back4app.io' // Server URL
-	// Parse.initialize(
-	// 	'03Pq0kbLRvci8D3OV92OFIIbNidw3kZrGma2sruS', // Application ID
-	// 	'SMnIF1sMs1zdczYwWU1SikdLtfIu4IzcWYhBhEMf', // Javascript key
-	// 	'HSNUMKsUeTtNjTxOIPB2ct3FIiD6NMJp7yc5w9WW' // Master key (never use it in the frontend)
-	// // )
-	// var client = await new Parse.LiveQueryClient({
-	// 	applicationId: '03Pq0kbLRvci8D3OV92OFIIbNidw3kZrGma2sruS',
-	// 	serverURL: 'wss://' + 'optoswim.back4app.io', // Example: 'wss://livequerytutorial.back4app.io'
-	// 	javascriptKey: 'SMnIF1sMs1zdczYwWU1SikdLtfIu4IzcWYhBhEMf',
-	// 	masterKey: 'HSNUMKsUeTtNjTxOIPB2ct3FIiD6NMJp7yc5w9WW',
-	// })
-	// await client.open()
-
-	// // Creates a new Query object to help us fetch MyCustomClass objects
-	// const query = new Parse.Query('LiveFeed')
-	// query.equalTo('liveFeed', true)
-
-	// var subscription = await client.subscribe(query)
-
-	// subscription.on('create', async () => {
+var prevEvent
+const event = async () => {
 	fs.watch('../last_Image/event.json', (event, filename) => {
 		if (filename) {
 			let jsObj = require('../last_Image/event.json')
-			sendImage(
-				jsObj.swimDetected,
-				parseInt(jsObj.numberSwimmers),
-				jsObj.drownDetected,
-				jsObj.serialNo
-			)
+			if (jsObj.swimDetected === true && prevEvent !== jsObj) {
+				console.log('event detected')
+				sendEvent(
+					jsObj.swimDetected,
+					parseInt(jsObj.numberSwimmers),
+					jsObj.drownDetected,
+					jsObj.serialNo
+				)
+				prevEvent = jsObj
+			}
 		}
 	})
-	// })
+}
+
+event()
+
+// Starts watching and creating Images objects when a LiveFeed object is created
+const liveQuery = async () => {
+	var client = await new Parse.LiveQueryClient({
+		applicationId: 'fqPHmhq9BPryvJRMRSyMRx974hOrK1KKdyKlUokV',
+		serverURL: 'wss://' + 'optoswimeye.back4app.io', // Example: 'wss://livequerytutorial.back4app.io'
+		javascriptKey: '9WV8pcSdsMg529URvKzTatId7iq4lwFRIItopkQI',
+		masterKey: '1ADOjf5x6kwRx1iXpI1ON5vC2lIIp60Yv9Dn5dSu',
+	})
+	await client.open()
+
+	// Creates a new Query object to help us fetch MyCustomClass objects
+	const query = new Parse.Query('LiveFeed')
+	query.equalTo('liveFeed', true)
+
+	var subscription = await client.subscribe(query)
+
+	subscription.on('create', async () => {
+		console.log('watcher started')
+		fs.watch('../last_Image/event.json', (event, filename) => {
+			if (filename) {
+				let jsObj = require('../last_Image/event.json')
+				sendImage(
+					jsObj.swimDetected,
+					parseInt(jsObj.numberSwimmers),
+					jsObj.drownDetected,
+					jsObj.serialNo
+				)
+			}
+		})
+	})
 }
 
 liveQuery()

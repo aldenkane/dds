@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 cd /home/pi/dds/sourceCode
-/usr/bin/local/node parsePi.js
+/usr/bin/node parsePi.js

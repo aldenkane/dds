@@ -16,6 +16,7 @@ from ez_cv import do_canny, segment_for_bottom, find_bottom_line, generate_botto
 ##########################################
 
 conf = json.load(open('./conf.json'))               # Open .json Config File
+device = json.load(open('./device.json'))              # Device Parameters
 first_frame = None                                  # Motion Detection First Frame
 avg = None                                          # Motion Detection Averaging Frame
 bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
@@ -31,10 +32,10 @@ JSON_FILE_PATH = '../last_Image/event.json'         # VARIABLES THAT ARE WRITTEN
 NUMBER_SWIMMERS = 0
 SWIMMER_DETECTED = False
 DROWNING_DETECT = False
-SERIAL_NO = conf["serial_no"]
+SERIAL_NO = device["serial_no"]
 
 if conf["raspberry_pi"]:                            # Initiate logging for Raspberry Pi
-    time.sleep(10)                                  # Camera Warmup
+    time.sleep(int(conf["camera_warmup_time"]))     # Camera Warmup
     time_tuple = time.localtime()                   # Logging Time
     log_Filename = '../logs/' + str(time_tuple[1]) + '.' + str(time_tuple[2]) + '.' + str(time_tuple[0]) + '_' + str(
         time_tuple[3]) + '.' + str(time_tuple[4]) + '.' + str(time_tuple[5]) + '_eye_V0.1.log'
@@ -143,7 +144,7 @@ while True:
     #######################################################
     # Declare hsv upper and lower bounds for color image detection
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
-    lower = np.array([84, 200, 100])
+    lower = np.array([84, 0, 0])
     upper = np.array([111, 255, 200])
     binary_image = cv2.inRange(hsv, lower, upper)
 
@@ -298,6 +299,7 @@ while True:
                                     colors[class_ids[i]],                                                   # BGR color
                                     1,                                                                      # thickness
                                     cv2.LINE_AA)                                                            # type of line
+                SWIMMER_DETECTED = True                                                                     # Set True for YOLOv3
 
     #######################################################
     # Show Images

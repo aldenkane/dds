@@ -58,9 +58,9 @@ if conf["do_yolo"]:
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
-# Font and random colors useful later when displaying the results
-font = cv2.FONT_HERSHEY_PLAIN
-colors = np.random.uniform(0, 255, size=(len(classes), 3))
+    # Font and random colors useful later when displaying the results
+    font = cv2.FONT_HERSHEY_PLAIN
+    colors = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # Initiate Windows Based on show_video in conf.json
 if conf["show_video"]:

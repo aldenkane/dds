@@ -86,6 +86,7 @@ event()
 
 // Starts watching and creating Images objects when a LiveFeed object is created
 const liveQuery = async () => {
+	let setLive
 	var client = await new Parse.LiveQueryClient({
 		applicationId: 'fqPHmhq9BPryvJRMRSyMRx974hOrK1KKdyKlUokV',
 		serverURL: 'wss://' + 'optoswimeye.back4app.io', // Example: 'wss://livequerytutorial.back4app.io'
@@ -98,21 +99,32 @@ const liveQuery = async () => {
 	const query = new Parse.Query('LiveFeed')
 	query.equalTo('liveFeed', true)
 
+	const query1 = new Parse.Query('LiveFeed')
+	query.equalTo('liveFeed', false)
+
 	var subscription = await client.subscribe(query)
+	var subscription1 = await client.subscribe(query1)
 
 	subscription.on('create', async () => {
-		console.log('watcher started')
+		setLive = true
 		fs.watch('../last_Image/event.json', (event, filename) => {
-			if (filename) {
-				let jsObj = require('../last_Image/event.json')
-				sendImage(
-					jsObj.swimDetected,
-					parseInt(jsObj.numberSwimmers),
-					jsObj.drownDetected,
-					jsObj.serialNo
-				)
+			if (setLive === true) {
+				if (filename) {
+					let jsObj = require('../last_Image/event.json')
+					sendImage(
+						jsObj.swimDetected,
+						parseInt(jsObj.numberSwimmers),
+						jsObj.drownDetected,
+						jsObj.serialNo
+					)
+				}
 			}
 		})
+	})
+
+	subscription.on('update', async () => {
+		// console.log('watcher started')
+		setLive = false
 	})
 }
 

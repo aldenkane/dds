@@ -1,6 +1,7 @@
 {
 	"show_video": true,
-	"raspberry_pi": false,
+	"raspberry_pi": true,
+	"do_yolo": false,
 	"serial_no": "0001",
 	"camera_warmup_time": 10,
 	"avg_delta_thresh": 70,

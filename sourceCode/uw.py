@@ -47,15 +47,16 @@ cam = cv2.VideoCapture(0)                           # Webcam Capture
 #######################################################
 # YOLO Initialization
 #######################################################
-net = cv2.dnn.readNet("../yolo/yolov3_custom_train_final.weights", "../yolo/yolov3_custom_train.cfg")
-sample_rate_yolo = 30                                        # How often to run YOLO
-classes = []                                            # Class list
-with open("../yolo/yolo.names", "r") as f:
-    classes = [line.strip() for line in f.readlines()]
+if conf["do_yolo"]:
+    net = cv2.dnn.readNet("../yolo/yolov3_custom_train_final.weights", "../yolo/yolov3_custom_train.cfg")
+    sample_rate_yolo = 30                                   # How often to run YOLO
+    classes = []                                            # Class list
+    with open("../yolo/yolo.names", "r") as f:
+        classes = [line.strip() for line in f.readlines()]
 
-# Get the output layers of our YOLO model
-layer_names = net.getLayerNames()
-output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
+    # Get the output layers of our YOLO model
+    layer_names = net.getLayerNames()
+    output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # Font and random colors useful later when displaying the results
 font = cv2.FONT_HERSHEY_PLAIN
@@ -249,58 +250,59 @@ while True:
         #######################################################
         # YOLO
         #######################################################
-        if frames_processed % sample_rate_yolo == 1:
-            height, width, channels = img_yolo.shape              # Get img shape for CV2 Blob
-            # Normalize input frame using blobFromImage, SwapRB Codes, and Scale Value to 1/255
-            blob = cv2.dnn.blobFromImage(img_yolo, scalefactor=1 / 255, size=(320, 320), mean=0, swapRB=True, crop=False)
-            net.setInput(blob)                                    # Set input of the net
-            outputs = net.forward(output_layers)                  # Predict outputs using net.forward
-            class_ids = []                                        # Initialize lists for displaying results, now that detection is done
-            confidences = []
-            boxes = []
+        if conf["do_yolo"]:
+            if frames_processed % sample_rate_yolo == 1:
+                height, width, channels = img_yolo.shape              # Get img shape for CV2 Blob
+                # Normalize input frame using blobFromImage, SwapRB Codes, and Scale Value to 1/255
+                blob = cv2.dnn.blobFromImage(img_yolo, scalefactor=1 / 255, size=(320, 320), mean=0, swapRB=True, crop=False)
+                net.setInput(blob)                                    # Set input of the net
+                outputs = net.forward(output_layers)                  # Predict outputs using net.forward
+                class_ids = []                                        # Initialize lists for displaying results, now that detection is done
+                confidences = []
+                boxes = []
 
-            for out in outputs:
-                for detection in out:
-                    # Get scores of detection
-                    scores = detection[5:]
-                    class_id = np.argmax(scores)
-                    confidence = scores[class_id]
+                for out in outputs:
+                    for detection in out:
+                        # Get scores of detection
+                        scores = detection[5:]
+                        class_id = np.argmax(scores)
+                        confidence = scores[class_id]
 
-                    # Now, have class ID's and have detections. Now, ignore, scores of low confidence. Get bounding box coordinates here
-                    if confidence >= 0.2:
-                        # Multiply this by width and height
-                        x = width * detection[0]    # Corresponds to X center
-                        y = height * detection[1]   # Corresponds to Y center
-                        w = width * detection[2]    # Corresponds to the box width, and
-                        h = height * detection[3]   # Corresponds to the box height
+                        # Now, have class ID's and have detections. Now, ignore, scores of low confidence. Get bounding box coordinates here
+                        if confidence >= 0.2:
+                            # Multiply this by width and height
+                            x = width * detection[0]    # Corresponds to X center
+                            y = height * detection[1]   # Corresponds to Y center
+                            w = width * detection[2]    # Corresponds to the box width, and
+                            h = height * detection[3]   # Corresponds to the box height
 
-                        # Append info to boxes list (List w/ in list)
-                        boxes.append([x, y, w, h])
-                        confidences.append(float(confidence))
-                        class_ids.append(class_id)
+                            # Append info to boxes list (List w/ in list)
+                            boxes.append([x, y, w, h])
+                            confidences.append(float(confidence))
+                            class_ids.append(class_id)
 
-            # Use cv2.dnn.NMS Boxes and play w/ NMS Threshold, Score Threshold, and top_k for detections. Top_k controls how many boxes/swimmers can be detected
-            indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.2, nms_threshold=0.2, eta=1, top_k=10)
+                # Use cv2.dnn.NMS Boxes and play w/ NMS Threshold, Score Threshold, and top_k for detections. Top_k controls how many boxes/swimmers can be detected
+                indices = cv2.dnn.NMSBoxes(boxes, confidences, score_threshold=0.2, nms_threshold=0.2, eta=1, top_k=10)
 
-            # Now, display stuff for YOLO
-            for i in range(len(boxes)):
-                if i in indices:
-                    for num_detects in indices:
-                        x, y, w, h = boxes[i]
-                        x1 = int(x - (w / 2))
-                        y1 = int(y - (h / 2))
-                        x2 = int(x + (w / 2))
-                        y2 = int(y + (h / 2))
-                        cv2.rectangle(img_yolo, (x1, y1), (x2, y2), colors[class_ids[i]], 3)
-                        cv2.putText(img_yolo,  # image
-                                    str(classes[class_ids[i]]) + ', Confidence: ' + str(confidences[i]),    # text
-                                    (x1, y1 - 10),                                                          # start position
-                                    cv2.FONT_HERSHEY_SIMPLEX,                                               # font
-                                    0.7,                                                                    # size
-                                    colors[class_ids[i]],                                                   # BGR color
-                                    1,                                                                      # thickness
-                                    cv2.LINE_AA)                                                            # type of line
-                SWIMMER_DETECTED = True                                                                     # Set True for YOLOv3
+                # Now, display stuff for YOLO
+                for i in range(len(boxes)):
+                    if i in indices:
+                        for num_detects in indices:
+                            x, y, w, h = boxes[i]
+                            x1 = int(x - (w / 2))
+                            y1 = int(y - (h / 2))
+                            x2 = int(x + (w / 2))
+                            y2 = int(y + (h / 2))
+                            cv2.rectangle(img_yolo, (x1, y1), (x2, y2), colors[class_ids[i]], 3)
+                            cv2.putText(img_yolo,  # image
+                                        str(classes[class_ids[i]]) + ', Confidence: ' + str(confidences[i]),    # text
+                                        (x1, y1 - 10),                                                          # start position
+                                        cv2.FONT_HERSHEY_SIMPLEX,                                               # font
+                                        0.7,                                                                    # size
+                                        colors[class_ids[i]],                                                   # BGR color
+                                        1,                                                                      # thickness
+                                        cv2.LINE_AA)                                                            # type of line
+                    SWIMMER_DETECTED = True                                                                     # Set True for YOLOv3
 
     #######################################################
     # Show Images

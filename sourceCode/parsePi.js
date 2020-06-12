@@ -86,7 +86,7 @@ event()
 
 // Starts watching and creating Images objects when a LiveFeed object is created
 const liveQuery = async () => {
-	const setLive
+	let watcher
 	var client = await new Parse.LiveQueryClient({
 		applicationId: 'fqPHmhq9BPryvJRMRSyMRx974hOrK1KKdyKlUokV',
 		serverURL: 'wss://' + 'optoswimeye.back4app.io', // Example: 'wss://livequerytutorial.back4app.io'
@@ -97,34 +97,30 @@ const liveQuery = async () => {
 
 	// Creates a new Query object to help us fetch MyCustomClass objects
 	const query = new Parse.Query('LiveFeed')
-	query.equalTo('liveFeed', true)
-
-	const query1 = new Parse.Query('LiveFeed')
-	query.equalTo('liveFeed', false)
+	query.equalTo('serialNo', '0001')
 
 	var subscription = await client.subscribe(query)
-	var subscription1 = await client.subscribe(query1)
 
 	subscription.on('create', async () => {
-		setLive = true
-		fs.watch('../last_Image/event.json', (event, filename) => {
-			if (setLive === true) {
-				if (filename) {
-					let jsObj = require('../last_Image/event.json')
-					sendImage(
-						jsObj.swimDetected,
-						parseInt(jsObj.numberSwimmers),
-						jsObj.drownDetected,
-						jsObj.serialNo
-					)
-				}
+		console.log('watcher opened')
+
+		watcher = fs.watch('../last_Image/event.json', (event, filename) => {
+			if (filename) {
+				let jsObj = require('../last_Image/event.json')
+				sendImage(
+					jsObj.swimDetected,
+					parseInt(jsObj.numberSwimmers),
+					jsObj.drownDetected,
+					jsObj.serialNo
+				)
 			}
 		})
 	})
 
 	subscription.on('update', async () => {
-		// console.log('watcher started')
-		setLive = false
+		watcher.close()
+		console.log('watcher closed')
+		// console.log(setLive)
 	})
 }
 

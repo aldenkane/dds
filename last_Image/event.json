@@ -1,6 +1,1 @@
-{
-	"swimDetected": true,
-	"numberSwimmers": "4",
-	"drownDetected": true,
-	"serialNo": "0001"
-}
+{"swimDetected": true, "numberSwimmers": "3", "drownDetected": false, "serialNo": "0001"}

@@ -1,5 +1,5 @@
 {
-	"show_video": true,
+	"show_video": false,
 	"raspberry_pi": true,
 	"do_yolo": false,
 	"serial_no": "0001",

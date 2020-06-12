@@ -215,6 +215,7 @@ while True:
     swimmers = []                                                 # Make list of boxes
     if contours:
         # Detect all swimmers, i.e. all objects with contours
+        SWIMMER_DETECTED = False
         for contours in contours:
             # use just the first contour to draw a rectangle
             x, y, w, h = cv2.boundingRect(contours)

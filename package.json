@@ -18,6 +18,7 @@
   "homepage": "https://github.com/aldenkane/dds#readme",
   "dependencies": {
     "btoa": "^1.2.1",
-    "parse": "^2.13.0"
+    "parse": "^2.13.0",
+    "simple-peer": "^9.7.2"
   }
 }

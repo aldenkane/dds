@@ -1,6 +1,8 @@
 const Parse = require('parse/node')
 const btoa = require('btoa')
 const fs = require('fs')
+const device = require('./device.json')
+console.log(device.serial_no)
 
 //Initializes Parse Object
 Parse.serverURL = 'https://optoswimeye.back4app.io' // Server URL
@@ -97,7 +99,7 @@ const liveQuery = async () => {
 
 	// Creates a new Query object to help us fetch MyCustomClass objects
 	const query = new Parse.Query('LiveFeed')
-	query.equalTo('serialNo', '0001')
+	query.equalTo('serialNo', `${device.serial_no}`)
 
 	var subscription = await client.subscribe(query)
 

@@ -246,6 +246,10 @@ while True:
                                 1,  # thickness
                                 cv2.LINE_AA)  # type of line
                     cv2.drawContours(frame, contours, -1, (255, 0, 0), 3)
+    else:
+        SWIMMER_DETECTED = False
+        swimmers = []
+        NUMBER_SWIMMERS = len(swimmers)  # Gives number of swimmers in pool
 
         #######################################################
         # YOLO

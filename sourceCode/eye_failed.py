@@ -25,7 +25,7 @@ cam = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')                 
 first_frame = None                                      # Set First Frame for Motion Detection
 res_scale = 0.5                                         # Resize Info
 frames_processed = 0                                    # Iterator for Frames Processed
-sample_rate = 30                                        # Sample Yolo Every N Frames
+sample_rate = 30                                       # Sample Yolo Every N Frames
 
 JSON_FILE_PATH = '../last_Image/event.json'             # JSON Writing Globals
 SERIAL_NO = '0001'

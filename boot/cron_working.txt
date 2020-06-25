@@ -1,0 +1,4 @@
+@reboot /home/pi/dds/boot/cv_boot.sh
+@reboot /home/pi/dds/boot/node_boot.sh > /home/pi/Desktop/debug_cron_node.txt 2>&1
+
+00 * * * * /usr/bin/sudo /sbin/shutdown -r > /home/pi/Desktop/debug_cron_reboot.txt 2>&1

@@ -2,11 +2,15 @@
 	"show_video": false,
 	"raspberry_pi": true,
 	"do_yolo": false,
-	"serial_no": "0001",
 	"camera_warmup_time": 10,
-	"avg_delta_thresh": 70,
-	"avg_alpha": 0.1,
+
+	"first_frame_threshold": 10,
 	"gaussian_blur_size": 11,
-	"first_frame_threshold": 20,
+
+	"do_averaging": false,
+	"avg_delta_thresh": 30,
+	"avg_alpha": 0.1,
+
+	"do_bsmog": false,
 	"min_motion_frames": 8
 }

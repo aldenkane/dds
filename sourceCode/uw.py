@@ -1,22 +1,24 @@
 # uw.py
-# OptoSwim embedded module for use in pools
+# Opto Labs embedded module for use in pools
 # Uses .json configuration file for loading environment parameters
 #   Author: Alden Kane
 
 import cv2
-import numpy as np
-import math
-import time
 import json
 import logging
-from ez_cv import do_canny, segment_for_bottom, find_bottom_line, generate_bottom_mask, write_pool_info_json, check_water_quality
+import math
+import numpy as np
+import time
+
+# Custom Library for Opto Labs
+from ez_cv import write_pool_info_json, check_water_quality, do_canny, segment_for_bottom, find_bottom_line, generate_bottom_mask
 
 ########################################
 # Section 1: Initialize Globals, Video Parameters, Windows, Load JSON File
 ##########################################
 
 conf = json.load(open('./conf.json'))               # Open .json Config File
-device = json.load(open('./device.json'))              # Device Parameters
+device = json.load(open('./device.json'))           # Device Parameters
 first_frame = None                                  # Motion Detection First Frame
 avg = None                                          # Motion Detection Averaging Frame
 bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
@@ -24,16 +26,17 @@ debounce_timer = 0                                  # Less Oscillation in Boxing
 frames_processed = 0                                # Iterate on Frames Processed
 starting_time = time.time()                         # For Measuring FPS
 timer = 0.00                                        # For Debouncing Boxes
+fps = 30
 
-drowningRisk = 0
-FPS = 30
-
-JSON_FILE_PATH = '../last_Image/event.json'         # VARIABLES THAT ARE WRITTEN TO JSON FILE
-NUMBER_SWIMMERS = 0
-SWIMMER_DETECTED = False
-DROWNING_DETECT = False
+# CAPS is Used for Config or Transported to Server
 SERIAL_NO = device["serial_no"]
+JSON_FILE_PATH = '../last_Image/event.json'         # VARIABLES THAT ARE WRITTEN TO JSON FILE
+SWIMMER_DETECTED = False                            # Green Light
+DROWNING_RISK = False                               # Yellow Light
+DROWNING_DETECT = False                             # Red Light
+NUMBER_SWIMMERS = 0                                 # Visual / Stat for Em
 
+# Raspberry Pi Configuration Block
 if conf["raspberry_pi"]:                            # Initiate logging for Raspberry Pi
     time.sleep(int(conf["camera_warmup_time"]))     # Camera Warmup
     time_tuple = time.localtime()                   # Logging Time
@@ -42,7 +45,8 @@ if conf["raspberry_pi"]:                            # Initiate logging for Raspb
     logging.basicConfig(filename=str(log_Filename), level=logging.DEBUG)
     logging.debug('Accessed Log File')
 
-cam = cv2.VideoCapture(0)                           # Webcam Capture
+# OPENCV Webcam Capture
+cam = cv2.VideoCapture(0)
 
 #######################################################
 # YOLO Initialization
@@ -136,29 +140,45 @@ while True:
     # Read Image, Ch
     #######################################################
     retval, frame = cam.read()                              # Image for main channel
-    img_yolo = frame.copy()                                 # Image for yolo stream
+    frame_yolo = frame.copy()                               # Image for yolo stream
 
-    var_of_laplacian = check_water_quality(frame)           # Check image sharpness using variance of Laplacian
+    # Rescale Input Image for Faster Processing
+    res_scale = 0.5
+    frame = cv2.resize(frame, (0, 0), fx=res_scale, fy=res_scale)
+
+    # Check image sharpness using variance of Laplacian as Proxy for Water Quality. Use empirical threshold
+    var_of_laplacian = check_water_quality(frame)
 
     #######################################################
     # Section 2: Color Detection - Set up HSV Color Detection Bounds
     #######################################################
     # Declare hsv upper and lower bounds for color image detection
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
+
+    # SUMMER TESTING AND DIARY STUDY
+    # lower = np.array([84, 0, 0])
+    # upper = np.array([111, 255, 200])
+
+    # OG ROLFS / ROCK VALUES ON SONY IMX GOPRO
     lower = np.array([84, 0, 0])
-    upper = np.array([111, 255, 200])
-    binary_image = cv2.inRange(hsv, lower, upper)
+    upper = np.array([111, 190, 150])
+
+    # Binary Image for Color Detection
+    binary_image_absolute_color = cv2.inRange(hsv, lower, upper)
 
     # Morphological operations for cleaner image
     # Remove artifacts of smaller pool lines, movement of water with initial erosion
-    binary_image = cv2.erode(binary_image, kernel_3)
+    binary_image_absolute_color = cv2.erode(binary_image_absolute_color, kernel_3)
+
     # Fill in binary image of swimmers with closing
-    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel=kernel_21)
-    binary_image = cv2.morphologyEx(binary_image, cv2.MORPH_CLOSE, kernel=kernel_21)
+    binary_image_absolute_color = cv2.morphologyEx(binary_image_absolute_color, cv2.MORPH_CLOSE, kernel=kernel_11)
+    binary_image_absolute_color = cv2.morphologyEx(binary_image_absolute_color, cv2.MORPH_CLOSE, kernel=kernel_11)
+
     # Erosion to clear up final image
-    binary_image = cv2.erode(binary_image, kernel_5)
+    binary_image_absolute_color = cv2.erode(binary_image_absolute_color, kernel_5)
+
     # Dilation to Connect Swim Suits - This adds noise to this binary image, but this is filtered out by logical AND later
-    binary_image = cv2.dilate(binary_image, kernel_21, iterations=2)
+    binary_image_absolute_color = cv2.dilate(binary_image_absolute_color, kernel_7, iterations=5)
 
     #######################################################
     # Section 3: Motion Detection - Grayscale Image Processing, Absolute Differencing for Motion Detection, Thresholding
@@ -170,7 +190,12 @@ while True:
         first_frame = gray
         continue
 
-    if avg is None:             # Initialize Average Frame
+    # Reset First Frame Logic --> Every 15 Min from calc: 30 FPS x 60s x 15 min
+    if frames_processed % 27000 == 0:
+        first_frame = gray
+
+    # Initialize Average Frame for Different Motion Detection
+    if avg is None:
         avg = gray.copy().astype("float")
         continue
 
@@ -200,7 +225,7 @@ while True:
     # Section 7: Perform Logical AND'ing of Binary Image, Implement Size Based Object Detection
     #######################################################
     # Perform bitwise AND of motion AND color contours. Change 'thresh' to preferred color motion detection
-    binary_intersection = cv2.bitwise_and(bs_mask, binary_image)
+    binary_intersection = cv2.bitwise_and(bs_mask, binary_image_absolute_color)
 
     # Find contours
     contours, hierarchy = cv2.findContours(binary_intersection,
@@ -225,17 +250,17 @@ while True:
                 NUMBER_SWIMMERS = len(swimmers)                   # Gives number of swimmers in pool
                 SWIMMER_DETECTED = True                           # This designates a swimmer detection
                 timer += 1                                        # Iterate on My Time
-                scaled_T = math.ceil(timer / FPS)                 # Scaled Time that Accounts for FPS
+                scaled_T = math.ceil(timer / fps)                 # Scaled Time that Accounts for FPS
 
                 # Put up bounding boxes w/ Text, If Statement for Timing
-                if not drowningRisk:
-                    debounce_timer = (debounce_timer + 1) / FPS
+                if not DROWNING_RISK:
+                    debounce_timer = (debounce_timer + 1) / fps
                     if debounce_timer < 0.1:
                         timer += 1
-                        scaled_T = math.ceil(timer / FPS)
+                        scaled_T = math.ceil(timer / fps)
                     elif debounce_timer > 1:
                         timer = 0
-                        drowningRisk = 0
+                        DROWNING_RISK = 0
                     cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 3)
                     cv2.putText(frame,  # image
                                 "Swimmer(s)",  # text
@@ -256,9 +281,9 @@ while True:
         #######################################################
         if conf["do_yolo"]:
             if frames_processed % sample_rate_yolo == 1:
-                height, width, channels = img_yolo.shape              # Get img shape for CV2 Blob
+                height, width, channels = frame_yolo.shape              # Get img shape for CV2 Blob
                 # Normalize input frame using blobFromImage, SwapRB Codes, and Scale Value to 1/255
-                blob = cv2.dnn.blobFromImage(img_yolo, scalefactor=1 / 255, size=(320, 320), mean=0, swapRB=True, crop=False)
+                blob = cv2.dnn.blobFromImage(frame_yolo, scalefactor=1 / 255, size=(320, 320), mean=0, swapRB=True, crop=False)
                 net.setInput(blob)                                    # Set input of the net
                 outputs = net.forward(output_layers)                  # Predict outputs using net.forward
                 class_ids = []                                        # Initialize lists for displaying results, now that detection is done
@@ -297,14 +322,14 @@ while True:
                             y1 = int(y - (h / 2))
                             x2 = int(x + (w / 2))
                             y2 = int(y + (h / 2))
-                            cv2.rectangle(img_yolo, (x1, y1), (x2, y2), colors[class_ids[i]], 3)
-                            cv2.putText(img_yolo,  # image
-                                        str(classes[class_ids[i]]) + ', Confidence: ' + str(confidences[i]),    # text
-                                        (x1, y1 - 10),                                                          # start position
-                                        cv2.FONT_HERSHEY_SIMPLEX,                                               # font
-                                        0.7,                                                                    # size
-                                        colors[class_ids[i]],                                                   # BGR color
-                                        1,                                                                      # thickness
+                            cv2.rectangle(frame_yolo, (x1, y1), (x2, y2), colors[class_ids[i]], 3)
+                            cv2.putText(frame_yolo,  # image
+                                        str(classes[class_ids[i]]) + ', Confidence: ' + str(confidences[i]),  # text
+                                        (x1, y1 - 10),  # start position
+                                        cv2.FONT_HERSHEY_SIMPLEX,  # font
+                                        0.7,  # size
+                                        colors[class_ids[i]],  # BGR color
+                                        1,  # thickness
                                         cv2.LINE_AA)                                                            # type of line
                     SWIMMER_DETECTED = True                                                                     # Set True for YOLOv3
 
@@ -329,19 +354,19 @@ while True:
         cv2.imshow("FF Motion Detection: Binary Image after Morphological Operations", thresh)
         cv2.imshow("Motion Detection: Absolute Difference", delta)
         cv2.imshow("BSMOG Mask", bs_mask)
-        cv2.imshow("YOLOv3 Boxing", img_yolo)
-        cv2.imshow("Color Detection: Binary image", binary_image)
+        cv2.imshow("YOLOv3 Boxing", frame_yolo)
+        cv2.imshow("Color Detection: Binary image", binary_image_absolute_color)
         cv2.imshow("DDS: Underwater Video Feed", frame)
         cv2.imshow("Video + Environment Parameters", display_img)
         cv2.imshow("Logical AND'ing of Motion and Color Contours", binary_intersection)
         cv2.imshow("Averaging Motion Detection", thresh_avg)
-        cv2.imshow("Color Detection: Image after Morphological Operations", binary_image)
+        cv2.imshow("Color Detection: Image after Morphological Operations", binary_image_absolute_color)
 
     #######################################################
     # Write Files, Iterate on Frame Count
     #######################################################
     if conf["raspberry_pi"]:
-        if frames_processed % 10 == 0:                           # Write To JSON File
+        if frames_processed % 5 == 0:                           # Write To JSON File
             cv2.imwrite('../last_Image/last_Frame.jpg', frame)
             write_pool_info_json(SWIMMER_DETECTED, NUMBER_SWIMMERS, DROWNING_DETECT, SERIAL_NO, JSON_FILE_PATH)
 

@@ -10,6 +10,7 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 * numpy==1.17.4
 * opencv-contrib-python==4.1.2.30
+* `pip install mediapipe`
 
 **Steps for Running Program:**
 

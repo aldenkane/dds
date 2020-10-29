@@ -1,9 +1,18 @@
+# Virtual Environment
 env
-dataSet/
-darknet/yolov3.weights
+
+# NN Weights
 yolo/yolov3_custom_train_final.weights
+
+# Cache and Session
+sourceCode/__pycache__
 last_Image/event.json
 last_Image/last_Frame.jp
+
+# Dependencies
 ./node_modules
 node_modules/
+
+# Device Config
 sourceCode/device.json
+

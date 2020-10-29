@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
 cd /home/pi/dds
-git pull
-sudo reboot
+/usr/bin/git pull
+/usr/bin/sudo /sbin/reboot

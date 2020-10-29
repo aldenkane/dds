@@ -1,0 +1,6 @@
+# CV and server scripts at reboot
+@reboot /home/pi/dds/boot/cv_boot.sh > /home/pi/Desktop/debug_cron_cv.txt 2>&1
+@reboot /home/pi/dds/boot/node_boot.sh > /home/pi/Desktop/debug_cron_node.txt 2>&1
+
+# Pull and reboot script every hour, on the hour
+00 * * * * /usr/bin/sudo /home/pi/dds/boot/pull_and_reboot.sh > /home/pi/Desktop/debug_cron_reboot.txt 2>&1

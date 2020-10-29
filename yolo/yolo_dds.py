@@ -23,9 +23,9 @@ output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
 # Loading the camera
 # For webcam!
-# cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(0)
 #cap = cv2.VideoCapture("/Users/aldenkane1/Documents/1optoSwim/dds/dataSet/swim3/swim3.1-12-of-14.mp4")
-cap = cv2.VideoCapture("/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Akaso Action Camera/akPools5.MOV")
+#cap = cv2.VideoCapture("/Volumes/Seagate HDD - Alden Kane/POOLS/maxPOOLS/Akaso Action Camera/akPools5.MOV")
 #cap = cv2.VideoCapture('../dataSet/swim3/swim3.1-12-of-14.mp4')
 
 # Font and random colors useful later when displaying the results

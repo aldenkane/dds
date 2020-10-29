@@ -1,18 +1,11 @@
-# DDS: A Two-Feature Underwater Swimmer Detection System
+# Opto Labs Embedded - Lean Prod.
 
-CSE 40535 Term Project by Alden Kane. Uses color and motion detection features from underwater video feed for frame-by-frame swimmer localization and detection.
 
-## Authors
+# Authors
 
-Source code by Alden Kane. See "Resources and References," as well as code comments, for pertinent citations.
+Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resources and References," as well as code comments, for pertinent citations.
 
 [https://www.aldenkane.com](https://www.aldenkane.com)
-
-
-## Sensor Selection and Data Collection
-
-I used a GoPro Hero7 Black (1920 x 1080 at 30 or 60 FPS) for data collection. I collected approximately 1.5 hours of underwater video at Rolf's Acquatic Center and Rockne Memorial Pool at the University of Notre Dame.
-
 
 ## Directions for Running Program
 

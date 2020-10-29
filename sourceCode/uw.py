@@ -177,9 +177,6 @@ while True:
     # Erosion to clear up final image
     binary_image_absolute_color = cv2.erode(binary_image_absolute_color, kernel_5)
 
-    # Dilation to Connect Swim Suits - This adds noise to this binary image, but this is filtered out by logical AND later
-    binary_image_absolute_color = cv2.dilate(binary_image_absolute_color, kernel_7, iterations=5)
-
     #######################################################
     # Section 3: Motion Detection - Grayscale Image Processing, Absolute Differencing for Motion Detection, Thresholding
     #######################################################
@@ -193,6 +190,7 @@ while True:
     # Reset First Frame Logic --> Every 15 Min from calc: 30 FPS x 60s x 15 min
     if frames_processed % 27000 == 0:
         first_frame = gray
+        continue
 
     # Initialize Average Frame for Different Motion Detection
     if avg is None:

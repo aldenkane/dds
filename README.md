@@ -39,6 +39,12 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 `pip3 install json`
 `pip3 install logging`
 
+## Compile Mediapipe from Source
+* Find Instructions at: https://google.github.io/mediapipe/solutions/pose.html#python
+* Install Bazel, OpenCV on Debian
+* Python Docs at: https://google.github.io/mediapipe/solutions/pose.html#desktop
+* Github at: https://github.com/google/mediapipe
+
 ## Test Samples
 
 * A test video, at `../dataSet/swim3/swim3.1-12-of-14.mp4` has been provided for running the code

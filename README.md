@@ -31,15 +31,18 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 2. `sudo nano /etc/dphys-swapfile` + Change CONF_SWAPSIZE = 1024
 3. `sudo dphys-swapfile swapon`
 
-##  Mediapipe + OpenCV Virtual Environment for Pose Detection
-`python3 -m venv mediapipe_pose_w_opencv_env && source mediapipe_pose_w_opencv_env/bin/activate
+##  Mediapipe + OpenCV Virtual Environment for Pose Detection Level Above DDS
+
+`python3 -m venv mp_env && source mp_env/bin/activate`
 `pip3 install opencv-contrib-python==4.1.2.30`
 `pip3 install mediapipe`
 `pip3 install numpy`
 `pip3 install json`
 `pip3 install logging`
 
-## Download Bazel from Bazel Apt Repository
+* source ./mp_env/bin/activate
+
+## Download Bazel from Bazel Apt Repository in Mediapipe
 * https://docs.bazel.build/versions/master/install-ubuntu.html
 
 ## Compile Mediapipe from Source
@@ -47,7 +50,6 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 * Install Bazel, OpenCV on Debian
 * Python Docs at: https://google.github.io/mediapipe/solutions/pose.html#desktop
 * Github at: https://github.com/google/mediapipe
-
 
 ## Test Samples
 

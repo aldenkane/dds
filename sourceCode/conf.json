@@ -1,5 +1,5 @@
 {
-	"show_video": false,
+	"show_video": true,
 	"raspberry_pi": true,
 	"do_yolo": false,
 	"camera_warmup_time": 10,
@@ -7,10 +7,9 @@
 	"first_frame_threshold": 10,
 	"gaussian_blur_size": 11,
 
-	"do_averaging": false,
 	"avg_delta_thresh": 30,
 	"avg_alpha": 0.1,
 
-	"do_bsmog": false,
-	"min_motion_frames": 8
+	"do_averaging": false,
+	"do_bsmog": false
 }

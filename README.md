@@ -6,10 +6,10 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 ## Directions for Running CV Program on Raspberry Pi 4
 
-Library Requirements, using Python 3.7.5 Release:
+**Library Requirements, using Python 3.7.5 Release:**
 
-numpy==1.17.4
-opencv-contrib-python==4.1.2.30
+* numpy==1.17.4
+* opencv-contrib-python==4.1.2.30
 
 **Steps for Running Program:**
 
@@ -51,4 +51,3 @@ sendImage(filePath);
 
 * Dr. Adam Czajka (Notre Dame Computer Vision Research Lab), for his keen insight and expertise  
 * Dr. Adrian Rosebrock (PyImageSearch) for his useful CV tutorials  
-

@@ -15,7 +15,7 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 1. Clone Repository  
 2. Ensure all libraries are installed  
-3. Set `cam = cv2.VideoCapture('')` location of video to test, or enter 0 for a webcam feed
+3. In `sourceCode/uw.py`, set `cam = cv2.VideoCapture('')` location of video to test, or enter 0 for a webcam feed
 4. `cd sourceCode`
 5. `python3 uw.py`
 

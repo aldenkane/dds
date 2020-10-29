@@ -1,4 +1,4 @@
-# Opto Labs Embedded - Lean Prod.
+# Opto Labs Embedded - Lean Production
 
 
 # Authors
@@ -7,7 +7,7 @@ Computer vision by [https://www.aldenkane.com](Alden Kane). Server and streaming
 
 ## Directions for Running Program
 
-**Library Requirements, using Python 3.7.5 Release:**
+Library Requirements, using Python 3.7.5 Release:
 
 numpy==1.17.4
 opencv-contrib-python==4.1.2.30
@@ -61,7 +61,6 @@ Reads JSON file of from
 
 "drownDetected": "Boolean"
 } 
-```
 
 Image class should show new instance with image file as base64 encoded string and argument values appended on Parse server
 

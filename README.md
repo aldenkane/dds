@@ -2,7 +2,7 @@
 
 ## Authors
 
-Computer vision by [https://www.aldenkane.com](Alden Kane). Server and streaming by James Graham.  See "Resources and References," as well as code comments, for pertinent citations.
+Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resources and References," as well as code comments, for pertinent citations.
 
 ## Directions for Running CV Program on Raspberry Pi 4
 

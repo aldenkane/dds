@@ -19,11 +19,11 @@ opencv-contrib-python==4.1.2.30
 4. `cd sourceCode`
 5. `python3 uw.py`
 
-## Configuring Boot for CV, Server, and Automatic Git Pull at Startup
+## Configuring Scripts Runnning at Boot for CV, Server, and Automatic Git Pull for FOTA
 
 1. Add contents of `/boot/config/cront_w_pull_and_reboot.txt` to `crontab -e` file on Raspberry Pi, for Pi user
 
-**Test Samples**
+## Test Samples
 
 * A test video, at `../dataSet/swim3/swim3.1-12-of-14.mp4` has been provided for running the code
 

@@ -39,11 +39,15 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 `pip3 install json`
 `pip3 install logging`
 
+## Download Bazel from Bazel Apt Repository
+* https://docs.bazel.build/versions/master/install-ubuntu.html
+
 ## Compile Mediapipe from Source
 * Find Instructions at: https://google.github.io/mediapipe/solutions/pose.html#python
 * Install Bazel, OpenCV on Debian
 * Python Docs at: https://google.github.io/mediapipe/solutions/pose.html#desktop
 * Github at: https://github.com/google/mediapipe
+
 
 ## Test Samples
 

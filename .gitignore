@@ -4,6 +4,11 @@ env/
 # NN Weights
 yolo/yolov3_custom_train_final.weights
 
+# OS and Program Files
+.idea/
+.DS_Store
+* .DS_Store
+
 # Cache and Session
 sourceCode/__pycache__/
 last_Image/event.json

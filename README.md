@@ -3,9 +3,7 @@
 
 # Authors
 
-Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resources and References," as well as code comments, for pertinent citations.
-
-[https://www.aldenkane.com](https://www.aldenkane.com)
+Computer vision by [https://www.aldenkane.com](Alden Kane). Server and streaming by James Graham.  See "Resources and References," as well as code comments, for pertinent citations.
 
 ## Directions for Running Program
 
@@ -19,21 +17,17 @@ opencv-contrib-python==4.1.2.30
 
 ..1. Clone Repository  
 ..2. Ensure all libraries are installed  
-..3. Set `cam = cv2.VideoCapture('')` location of video to test 
-..4. From the top-level directory:  
-```
-python3 uw_swimmer_detection.py
-```
+..3. Set `cam = cv2.VideoCapture('')` location of video to test, or enter 0 for a webcam feed
+..4. `cd sourceCode`
+..5. `python3 uw.py`
 
+```
+python3 uw.py
+```
 
 **Test Samples**
 
 ..* A test video, at `../dataSet/swim3/swim3.1-12-of-14.mp4` has been provided for running the code
-
-
-## System Accuracy
-
-Testing by Alden Kane showed an Intersection over Union (IoU) of approximately 0.81 ± 0.12 on the train and validation sets. The test set, sourced from Rockne Memorial Pool, showed lower classificaiton accuracy due to poor overhead illumination in the pool.
 
 ## Parse install on Rasberry Pi
 
@@ -54,7 +48,6 @@ const sendImage = require('./parsePi.js');
 sendImage(filePath);
 
 ```
-
 Function Arguments:
 
 filePath --> takes relative file path as a string.
@@ -68,16 +61,9 @@ Reads JSON file of from
 
 "drownDetected": "Boolean"
 } 
+```
 
 Image class should show new instance with image file as base64 encoded string and argument values appended on Parse server
-
-## Future Improvements
-
-System improvements can be generated using:  
-..* A convolutional neural network (CNN) for swimmer classification. This entails annotating a data set large enough for feature, and then integrating it with color and motion detection in a majority-voting system.  
-..* A more diverse data set of swimmers with different skin pigment, age, and swimming style.  
-..* Improved sensor selection. Selecting embedded cameras with lower resolution and frame rates can enhance run time, save on computational cost, and allow for scaleable architectures for implementation in commercial pools.  
-
 
 ## Resources and Reference
 

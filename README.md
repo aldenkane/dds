@@ -24,6 +24,21 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 1. Add contents of `/boot/config/cront_w_pull_and_reboot.txt` to `crontab -e` file on Raspberry Pi, for Pi user
 
+
+## Increase SWAP on Raspberry Pi 4 for CV Processing
+
+1. `sudo dphys-swapfile swapoff`
+2. `sudo nano /etc/dphys-swapfile` + Change CONF_SWAPSIZE = 1024
+3. `sudo dphys-swapfile swapon`
+
+##  Mediapipe + OpenCV Virtual Environment for Pose Detection
+`python3 -m venv mediapipe_pose_w_opencv_env && source mediapipe_pose_w_opencv_env/bin/activate
+`pip3 install opencv-contrib-python==4.1.2.30`
+`pip3 install mediapipe`
+`pip3 install numpy`
+`pip3 install json`
+`pip3 install logging`
+
 ## Test Samples
 
 * A test video, at `../dataSet/swim3/swim3.1-12-of-14.mp4` has been provided for running the code

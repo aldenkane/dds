@@ -6,6 +6,16 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 ## Directions for Running CV Program on Raspberry Pi 4
 
+**Config Fleet Raspberry Pis w/ Opto Labs git Credentials
+
+1. `git config credential.helper store`
+2. `git push` or any other git operation where a login is required is sufficient for logging in a git user
+
+## Edit wpa_supplicant.conf file for WLAN Connectivity
+
+1. nano /etc/wpa_supplicant/wpa_supplicant.conf
+2. Add network, ssid, and psk for desired locations of operation
+
 **Library Requirements, using Python 3.7.5 Release:**
 
 * numpy==1.17.4
@@ -24,7 +34,6 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 1. Add contents of `/boot/config/cront_w_pull_and_reboot.txt` to `crontab -e` file on Raspberry Pi, for Pi user
 
-
 ## Increase SWAP on Raspberry Pi 4 for CV Processing
 
 1. `sudo dphys-swapfile swapoff`
@@ -42,7 +51,7 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 * source ./mp_env/bin/activate
 
-## Download Bazel and Setup w/ Bazelisk (NEEDED for MEDIAPIPE)
+## Download Bazel and Setup w/ Bazelisk (Needed for Mediapipe)
 * Docs: https://docs.bazel.build/versions/master/install-ubuntu.html
 * README: https://github.com/bazelbuild/bazelisk/blob/master/README.md
 

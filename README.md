@@ -42,8 +42,9 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 * source ./mp_env/bin/activate
 
-## Download Bazel from Bazel Apt Repository in Mediapipe
-* https://docs.bazel.build/versions/master/install-ubuntu.html
+## Download Bazel and Setup w/ Bazelisk (NEEDED for MEDIAPIPE)
+* Docs: https://docs.bazel.build/versions/master/install-ubuntu.html
+* README: https://github.com/bazelbuild/bazelisk/blob/master/README.md
 
 ## Compile Mediapipe from Source
 * Find Instructions at: https://google.github.io/mediapipe/solutions/pose.html#python

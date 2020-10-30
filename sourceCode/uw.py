@@ -21,7 +21,7 @@ conf = json.load(open('./conf.json'))               # Open .json Config File
 device = json.load(open('./device.json'))           # Device Parameters
 first_frame = None                                  # Motion Detection First Frame
 avg = None                                          # Motion Detection Averaging Frame
-bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
+# bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
 debounce_timer = 0                                  # Less Oscillation in Boxing
 frames_processed = 0                                # Iterate on Frames Processed
 starting_time = time.time()                         # For Measuring FPS

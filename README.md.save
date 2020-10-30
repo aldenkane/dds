@@ -22,10 +22,9 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 * opencv-contrib-python==4.1.2.30
 * `pip install mediapipe`
 
-** Install Node on Raspberry Pi
+**Install Node on Raspberry Pi:**
 
-1. Instructions at https://gist.github.com/vallettea/82420ab0c3e762b53a2b
-
+1. Instructions at 
 **Steps for Running Program:**
 
 1. Clone Repository  

@@ -42,6 +42,11 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 * source ./mp_env/bin/activate
 
+## Google Pose Estimation tflow
+
+* https://storage.googleapis.com/tfjs-models/demos/posenet/camera.html
+
+
 ## Download Bazel and Setup w/ Bazelisk (NEEDED for MEDIAPIPE)
 * Docs: https://docs.bazel.build/versions/master/install-ubuntu.html
 * README: https://github.com/bazelbuild/bazelisk/blob/master/README.md

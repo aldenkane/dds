@@ -22,10 +22,9 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 * opencv-contrib-python==4.1.2.30
 * `pip install mediapipe`
 
-** Install Node on Raspberry Pi
+**Install Node on Raspberry Pi:**
 
-1. Instructions at https://gist.github.com/vallettea/82420ab0c3e762b53a2b
-
+1. Instructions at 
 **Steps for Running Program:**
 
 1. Clone Repository  
@@ -55,16 +54,7 @@ Computer vision by Alden Kane. Server and streaming by James Graham.  See "Resou
 
 * source ./mp_env/bin/activate
 
-<<<<<<< HEAD
-## Google Pose Estimation tflow
-
-* https://storage.googleapis.com/tfjs-models/demos/posenet/camera.html
-
-
-## Download Bazel and Setup w/ Bazelisk (NEEDED for MEDIAPIPE)
-=======
 ## Download Bazel and Setup w/ Bazelisk (Needed for Mediapipe)
->>>>>>> 5d865bbc7d30e776a5916aaf04f0de2a74c5e2b7
 * Docs: https://docs.bazel.build/versions/master/install-ubuntu.html
 * README: https://github.com/bazelbuild/bazelisk/blob/master/README.md
 

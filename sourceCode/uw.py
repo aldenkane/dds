@@ -43,7 +43,7 @@ if conf["raspberry_pi"]:                            # Initiate logging for Raspb
     log_Filename = '../logs/' + str(time_tuple[1]) + '.' + str(time_tuple[2]) + '.' + str(time_tuple[0]) + '_' + str(
         time_tuple[3]) + '.' + str(time_tuple[4]) + '.' + str(time_tuple[5]) + '_eye_V0.1.log'
     logging.basicConfig(filename=str(log_Filename), level=logging.DEBUG)
-    logging.debug('Accessed Log File')
+    logging.debug('Accessed Log File for Local Pi')
 
 # OPENCV Webcam Capture
 cam = cv2.VideoCapture(0)
@@ -116,6 +116,7 @@ while True:
         cv2.moveWindow("Video + Environment Parameters", 840, 600)
         cv2.moveWindow("Averaging Motion Detection", 1260, 0)
         cv2.moveWindow("DDS: Underwater Video Feed", 0, 0)
+        logging.debug('Initialized Video Frames on Local Pi')
 
     # Declare kernels of various sizes for experimentation
     kernel_2 = np.ones((2, 2), np.uint8)
@@ -140,6 +141,7 @@ while True:
     # Read Image, Ch
     #######################################################
     retval, frame = cam.read()                              # Image for main channel
+    logging.debug('Reading From Camera')
     frame_yolo = frame.copy()                               # Image for yolo stream
 
     # Rescale Input Image for Faster Processing
@@ -190,6 +192,7 @@ while True:
     # Reset First Frame Logic --> Every 15 Min from calc: 30 FPS x 60s x 15 min
     if frames_processed % 27000 == 0:
         first_frame = gray
+        logging.debug('Replaced first_frame after 27k frames')
         continue
 
     # First Frame Motion Detection
@@ -370,10 +373,12 @@ while True:
     # Write Files, Iterate on Frame Count
     #######################################################
     if conf["raspberry_pi"]:
-        if frames_processed % 5 == 0:                           # Write To JSON File
-            cv2.imwrite('../last_Image/last_Frame.jpg', frame)
+        if frames_processed % 15 == 0:                           # Write To JSON File
+            cv2.imwrite('../last_Image/last_frame.jpg', frame)
             write_pool_info_json(SWIMMER_DETECTED, NUMBER_SWIMMERS, DROWNING_DETECT, SERIAL_NO, JSON_FILE_PATH)
-
+            logging.debug('Wrote Image and JSON')
+    
+    
     frames_processed += 1                                       # Iterate Frame Count
 
     action = cv2.waitKey(1)

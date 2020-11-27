@@ -21,12 +21,15 @@ conf = json.load(open('./conf.json'))               # Open .json Config File
 device = json.load(open('./device.json'))           # Device Parameters
 first_frame = None                                  # Motion Detection First Frame
 avg = None                                          # Motion Detection Averaging Frame
-# bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
 debounce_timer = 0                                  # Less Oscillation in Boxing
 frames_processed = 0                                # Iterate on Frames Processed
 starting_time = time.time()                         # For Measuring FPS
 timer = 0.00                                        # For Debouncing Boxes
 fps = 30
+
+# Conditional Initialization
+if conf["do_bsmog"]:
+    bsmog = cv2.bgsegm.createBackgroundSubtractorMOG(history=150, nmixtures=5, backgroundRatio=0.1, noiseSigma=0)  # Background Subtractor
 
 # CAPS is Used for Config or Transported to Server
 SERIAL_NO = device["serial_no"]
@@ -46,7 +49,11 @@ if conf["raspberry_pi"]:                            # Initiate logging for Raspb
     logging.debug('Accessed Log File for Local Pi')
 
 # OPENCV Webcam Capture
-cam = cv2.VideoCapture(0)
+if conf["vid_from_webcam"]:
+    cam = cv2.VideoCapture(0)
+
+if conf["vid_from_dataset"]:
+    cam = cv2.VideoCapture("/Users/aldenkane1/Documents/1Opto Labs/dds/dataSet/swim3/swim3.1-12-of-14.mp4")
 
 #######################################################
 # YOLO Initialization
@@ -206,12 +213,11 @@ while True:
     # thresh = cv2.dilate(thresh, kernel_11, iterations=5)
     # thresh = cv2.dilate(thresh, kernel_13, iterations=4)
 
-    # Initialize Average Frame for Different Motion Detection
-    if avg is None:
-        avg = gray.copy().astype("float")
-        continue
-
     if conf["do_averaging"]:
+        # Initialize Average Frame for Different Motion Detection
+        if avg is None:
+            avg = gray.copy().astype("float")
+            continue
         # Averaging Motion Detection
         cv2.accumulateWeighted(gray, avg, conf["avg_alpha"])
         frameDelta = cv2.absdiff(gray, cv2.convertScaleAbs(avg))
@@ -349,12 +355,12 @@ while True:
         line2_text = "NUMBER_SWIMMERS: {}".format(NUMBER_SWIMMERS)
         line3_text = "DROWNING_DETECT: {}".format(DROWNING_DETECT)
         line4_text = "FPS: {}".format(measured_FPS)
-        line5_text = "Variance of Lap.: {}".format(var_of_laplacian)
+        #line5_text = "Variance of Lap.: {}".format(var_of_laplacian)
         cv2.putText(display_img, line1_text, (20, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(display_img, line2_text, (20, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(display_img, line3_text, (20, 150), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
         cv2.putText(display_img, line4_text, (20, 200), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        cv2.putText(display_img, line5_text, (20, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+        #cv2.putText(display_img, line5_text, (20, 250), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         # Show Frames
         cv2.imshow("FF Motion Detection: Binary Image after Morphological Operations", thresh)

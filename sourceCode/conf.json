@@ -1,8 +1,10 @@
 {
-	"show_video": false,
-	"raspberry_pi": true,
-	"do_yolo": false,
-	"camera_warmup_time": 10,
+	"show_video": true,
+	"raspberry_pi": false,
+	"camera_warmup_time": 5,
+
+	"vid_from_webcam": true,
+	"vid_from_dataset": true,
 
 	"first_frame_threshold": 10,
 	"gaussian_blur_size": 11,
@@ -10,6 +12,7 @@
 	"avg_delta_thresh": 30,
 	"avg_alpha": 0.1,
 
+	"do_yolo": false,
 	"do_averaging": false,
 	"do_bsmog": false
 }
